@@ -9,7 +9,7 @@ namespace SolarisBot.Database
         public ulong UserId { get; set; } = ulong.MinValue;
         public ulong GuildId { get; set; } = ulong.MinValue;
         public ulong NextUse { get; set; } = ulong.MinValue;
-        public bool IsDeleted { get; set; } = false; //todo: [TEST] Do new DB Constraints and soft delete work?
+        public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public DbJokeTimeout() { }
     }
