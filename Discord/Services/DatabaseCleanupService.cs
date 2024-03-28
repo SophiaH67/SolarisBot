@@ -75,7 +75,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnUserLeftRemoveQuotesAsync(DatabaseContext dbCtx, SocketGuild guild, SocketUser user)
         {
-            var quotes = await dbCtx.Quotes.ForGuild(guild.Id).Where(x => x.CreatorId == user.Id).ToArrayAsync();
+            var quotes = await dbCtx.Quotes.IsDeleted(false).ForGuild(guild.Id).Where(x => x.CreatorId == user.Id).ToArrayAsync();
             if (quotes.Length == 0)
                 return false;
 

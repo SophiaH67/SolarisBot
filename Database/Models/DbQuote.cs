@@ -12,7 +12,7 @@ namespace SolarisBot.Database
         public ulong CreatorId { get; set; } = ulong.MinValue;
         public ulong ChannelId { get; set; } = ulong.MinValue;
         public ulong MessageId { get; set; } = ulong.MinValue;
-        public bool IsDeleted { get; set; } = false; //todo: impl
+        public bool IsDeleted { get; set; } = false; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public DbQuote() { }
 
@@ -28,5 +28,8 @@ namespace SolarisBot.Database
     {
         internal static IQueryable<DbQuote> ForGuild(this IQueryable<DbQuote> query, ulong id)
             => query.Where(x => x.GuildId == id);
+
+        internal static IQueryable<DbQuote> IsDeleted(this IQueryable<DbQuote> query, bool isDeleted)
+            => query.Where(x => x.IsDeleted == isDeleted);
     }
 }

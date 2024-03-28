@@ -39,14 +39,14 @@ namespace SolarisBot.Discord.Modules.Quotes
             }
 
             //Check for duplicates
-            if (guild.Quotes.Any(x => x.MessageId == message.Id || x.AuthorId == message.Author.Id && x.Text == message.CleanContent && x.GuildId == Context.Guild.Id))
+            if (guild.Quotes.Any(x => !x.IsDeleted && (x.MessageId == message.Id || x.AuthorId == message.Author.Id && x.Text == message.CleanContent && x.GuildId == Context.Guild.Id)))
             {
                 await Interaction.ReplyErrorAsync("Message has already been quoted");
                 return;
             }
 
             //Check if user has available slots
-            if (guild.Quotes.Count(x => x.CreatorId == Context.User.Id) >= _botConfig.MaxQuotesPerUser)
+            if (guild.Quotes.Count(x => !x.IsDeleted && x.CreatorId == Context.User.Id) >= _botConfig.MaxQuotesPerUser)
             {
                 await Interaction.ReplyErrorAsync($"You already have **{_botConfig.MaxQuotesPerUser}** Quotes on this server, please delete some to create more");
                 return;
@@ -80,7 +80,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             var user = GetGuildUser(Context.User);
             bool isAdmin = user?.GuildPermissions.ManageMessages ?? false;
 
-            var dbQuote = await _dbContext.Quotes.FirstOrDefaultAsync(x => x.QuoteId == id && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
+            var dbQuote = await _dbContext.Quotes.IsDeleted(false).FirstOrDefaultAsync(x => x.QuoteId == id && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
             if (dbQuote is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
@@ -140,7 +140,7 @@ namespace SolarisBot.Discord.Modules.Quotes
         [SlashCommand("random", "Picks a random quote")]
         public async Task RandomQuoteAsync()
         {
-            var quotesQuery = _dbContext.Quotes.ForGuild(Context.Guild.Id);
+            var quotesQuery = _dbContext.Quotes.IsDeleted(false).ForGuild(Context.Guild.Id);
 
             var quoteNum = await quotesQuery.CountAsync();
             if (quoteNum == 0)
