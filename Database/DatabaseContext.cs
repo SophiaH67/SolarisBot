@@ -50,7 +50,7 @@ namespace SolarisBot.Database
             }
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) //todo: deletion date, handle modified and added via db too?
         {
             var changedEntries = ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
             if (changedEntries.Any())
@@ -90,7 +90,7 @@ namespace SolarisBot.Database
 
                 if (version < 1)
                 {
-                    queries.AddRange(new List<string>()
+                    queries.AddRange(new List<string>() //todo: set primary keys not null
                     {
                         "PRAGMA foreign_keys = ON",
 
@@ -98,7 +98,7 @@ namespace SolarisBot.Database
 
                         "CREATE TABLE RoleGroups(RoleGroupId INTEGER PRIMARY KEY AUTOINCREMENT, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", AllowOnlyOne BOOL NOT NULL DEFAULT 0, RequiredRoleId INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(GuildId, Identifier))",
                         
-                        "CREATE TABLE RoleConfigs(RoleId INTEGER PRIMARY KEY, RoleGroupId INTEGER REFERENCES RoleGroups(RoleGroupId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(RoleGroupId, Identifier))",
+                        "CREATE TABLE RoleConfigs(RoleConfigId INTEGER PRIMARY KEY, RoldId INTEGER NOT NULL DEFAULT 0, RoleGroupId INTEGER REFERENCES RoleGroups(RoleGroupId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(RoleId), UNIQUE(RoleGroupId, Identifier))",
                         
                         "CREATE TABLE Quotes(QuoteId INTEGER PRIMARY KEY, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, Text TEXT NOT NULL DEFAULT \"\", AuthorId INTEGER NOT NULL DEFAULT 0, CreatorId INTEGER NOT NULL DEFAULT 0, ChannelId INTEGER NOT NULL DEFAULT 0, MessageId INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0)",
                         "CREATE TRIGGER QuotesAvoidDuplicateInsert BEFORE INSERT ON Quotes BEGIN SELECT RAISE(ABORT, 'Duplicate quote on insert') WHERE EXISTS (SELECT 1 FROM Quotes WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND (NEW.MessageId = MessageId OR (NEW.AuthorId = AuthorId AND NEW.GuildId = GuildId AND NEW.Text = Text)))); END;",

@@ -12,7 +12,7 @@ namespace SolarisBot.Database
         public bool AllowOnlyOne { get; set; } = false;
         public string Description { get; set; } = string.Empty;
         public ulong RequiredRoleId { get; set; } = ulong.MinValue;
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; } = false; //todo: impl
 
         [ForeignKey(nameof(DbRoleConfig.RoleGroupId))]
         public virtual ICollection<DbRoleConfig> RoleConfigs { get; set; } = new HashSet<DbRoleConfig>();
