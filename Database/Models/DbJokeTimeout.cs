@@ -11,7 +11,6 @@ namespace SolarisBot.Database
         public ulong NextUse { get; set; } = ulong.MinValue;
         public bool IsDeleted { get; set; } = false; //todo: impl
 
-
         public DbJokeTimeout() { }
     }
 

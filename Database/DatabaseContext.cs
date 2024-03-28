@@ -31,6 +31,7 @@ namespace SolarisBot.Database
             modelBuilder.Entity<DbRoleGroup>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbRoleConfig>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbQuote>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<DbJokeTimeout>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbReminder>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbBridge>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbRegexChannel>().HasQueryFilter(x => !x.IsDeleted);
@@ -114,6 +115,9 @@ namespace SolarisBot.Database
                         "CREATE TRIGGER QuotesSoftDelete BEFORE DELETE ON Quotes FOR EACH ROW BEGIN UPDATE Quotes SET IsDeleted = 1 WHERE QuoteId = OLD.QuoteId; END;",
 
                         "CREATE TABLE JokeTimeouts(JokeTimeoutId INTEGER PRIMARY KEY AUTOINCREMENT, UserId INTEGER NOT NULL DEFAULT 0, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, NextUse INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(GuildId, UserId))",
+                        "CREATE TRIGGER JokeTimeoutsAvoidDuplicateInsert BEFORE INSERT ON JokeTimeouts BEGIN SELECT RAISE(ABORT, 'Duplicate joke timeout on insert') WHERE EXISTS (SELECT 1 FROM JokeTimeouts WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND NEW.GuildId = GuildId AND NEW.UserId = UserId)); END;",
+                        "CREATE TRIGGER JokeTimeoutsAvoidDuplicateUpdate BEFORE UPDATE ON JokeTimeouts BEGIN SELECT RAISE(ABORT, 'Duplicate joke timeout on update') WHERE EXISTS (SELECT 1 FROM JokeTimeouts WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND NEW.GuildId = GuildId AND NEW.UserId = UserId)); END;",
+                        "CREATE TRIGGER JokeTimeoutsSoftDelete BEFORE DELETE ON JokeTimeouts FOR EACH ROW BEGIN UPDATE JokeTimeouts SET IsDeleted = 1 WHERE JokeTimeoutId = OLD.JokeTimeoutId; END;",
 
                         "CREATE TABLE Reminders(ReminderId INTEGER PRIMARY KEY AUTOINCREMENT, UserId INTEGER NOT NULL DEFAULT 0, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, ChannelId INTEGER NOT NULL DEFAULT 0, RemindAt INTEGER NOT NULL DEFAULT 0, Text TEXT NOT NULL DEFAULT \"\", IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0)",
                         "CREATE TRIGGER RemindersAvoidDuplicateInsert BEFORE INSERT ON Reminders BEGIN SELECT RAISE(ABORT, 'Duplicate reminder on insert') WHERE EXISTS (SELECT 1 FROM Reminders WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND NEW.GuildId = GuildId AND NEW.UserId = UserId AND NEW.Text = Text)); END;",
