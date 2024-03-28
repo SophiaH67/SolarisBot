@@ -10,7 +10,7 @@ namespace SolarisBot.Database
         public ulong RoleGroupId { get; set; } = ulong.MinValue;
         public string Identifier { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public bool IsDeleted { get; set; } = false; //todo: impl
+        public bool IsDeleted { get; set; } = false; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public virtual DbRoleGroup RoleGroup { get; set; } = null!;
 

@@ -28,6 +28,7 @@ namespace SolarisBot.Database
         /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder) //todo: [TEST] Do global query filters apply?
         {
+            modelBuilder.Entity<DbRoleConfig>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbQuote>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbReminder>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<DbBridge>().HasQueryFilter(x => !x.IsDeleted);
@@ -98,8 +99,11 @@ namespace SolarisBot.Database
 
                         "CREATE TABLE RoleGroups(RoleGroupId INTEGER PRIMARY KEY AUTOINCREMENT, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", AllowOnlyOne BOOL NOT NULL DEFAULT 0, RequiredRoleId INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(GuildId, Identifier))",
                         
-                        "CREATE TABLE RoleConfigs(RoleConfigId INTEGER PRIMARY KEY, RoldId INTEGER NOT NULL DEFAULT 0, RoleGroupId INTEGER REFERENCES RoleGroups(RoleGroupId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(RoleId), UNIQUE(RoleGroupId, Identifier))",
-                        
+                        "CREATE TABLE RoleConfigs(RoleConfigId INTEGER PRIMARY KEY, RoldId INTEGER NOT NULL DEFAULT 0, RoleGroupId INTEGER REFERENCES RoleGroups(RoleGroupId) ON DELETE CASCADE ON UPDATE CASCADE, Identifier TEXT NOT NULL DEFAULT \"\", Description TEXT NOT NULL DEFAULT \"\", IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0)",
+                        "CREATE TRIGGER RoleConfigsAvoidDuplicateInsert BEFORE INSERT ON RoleConfigs BEGIN SELECT RAISE(ABORT, 'Duplicate role config on insert') WHERE EXISTS (SELECT 1 FROM RoleConfigs WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND (NEW.RoleId = RoleId OR (NEW.RoleGroupId = RoleGroupId AND NEW.Identifier = Identifier)))); END;",
+                        "CREATE TRIGGER RoleConfigsAvoidDuplicateUpdate BEFORE UPDATE ON RoleConfigs BEGIN SELECT RAISE(ABORT, 'Duplicate role config on update') WHERE EXISTS (SELECT 1 FROM RoleConfigs WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND (NEW.RoleId = RoleId OR (NEW.RoleGroupId = RoleGroupId AND NEW.Identifier = Identifier)))); END;",
+                        "CREATE TRIGGER RoleConfigsSoftDelete BEFORE DELETE ON RoleConfigs FOR EACH ROW BEGIN UPDATE Quotes SET IsDeleted = 1 WHERE RoleConfigId = OLD.RoleConfigId; END;",
+
                         "CREATE TABLE Quotes(QuoteId INTEGER PRIMARY KEY, GuildId INTEGER REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, Text TEXT NOT NULL DEFAULT \"\", AuthorId INTEGER NOT NULL DEFAULT 0, CreatorId INTEGER NOT NULL DEFAULT 0, ChannelId INTEGER NOT NULL DEFAULT 0, MessageId INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0)",
                         "CREATE TRIGGER QuotesAvoidDuplicateInsert BEFORE INSERT ON Quotes BEGIN SELECT RAISE(ABORT, 'Duplicate quote on insert') WHERE EXISTS (SELECT 1 FROM Quotes WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND (NEW.MessageId = MessageId OR (NEW.AuthorId = AuthorId AND NEW.GuildId = GuildId AND NEW.Text = Text)))); END;",
                         "CREATE TRIGGER QuotesAvoidDuplicateUpdate BEFORE UPDATE ON Quotes BEGIN SELECT RAISE(ABORT, 'Duplicate quote on update') WHERE EXISTS (SELECT 1 FROM Quotes WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND (NEW.MessageId = MessageId OR (NEW.AuthorId = AuthorId AND NEW.GuildId = GuildId AND NEW.Text = Text)))); END;",
