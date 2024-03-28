@@ -17,6 +17,7 @@ namespace SolarisBot.Database
         public ulong AppliedRoleId { get; set; } = ulong.MinValue;
         public string PunishmentMessage { get; set; } = string.Empty;
         public bool PunishmentDelete { get; set; } = false;
+        public ulong PunishmentTimeout { get; set; } = ulong.MinValue;
         public bool IsDeleted { get; set; } = false; //todo: impl
 
         public override string ToString() //todo: [Logging] Add better ToString?

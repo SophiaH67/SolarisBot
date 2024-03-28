@@ -63,7 +63,7 @@ namespace SolarisBot.Database
         /// <summary>
         /// Attempts to migrate the database, throws on error
         /// </summary>
-        private void TryMigrate() //todo: [FEATURE] code first?
+        private void TryMigrate() //todo: [FEATURE] code first, data validation?
         {
             if (_hasMigrated) return;
 
@@ -103,7 +103,7 @@ namespace SolarisBot.Database
                         "CREATE TRIGGER BridgesAvoidDuplicateUpdate BEFORE UPDATE ON Bridges BEGIN SELECT RAISE(ABORT, 'Duplicate bridge on update') WHERE EXISTS (SELECT 1 FROM Bridges WHERE (NEW.IsDeleted = 0 AND IsDeleted = 0 AND ((ChannelAId = NEW.ChannelAId AND ChannelBId = NEW.ChannelBId) OR (ChannelBId = NEW.ChannelAId AND ChannelAId = NEW.ChannelBId)))); END;",
                         "CREATE TRIGGER BridgesSoftDelete BEFORE DELETE ON Bridges FOR EACH ROW BEGIN UPDATE Bridges SET IsDeleted = 1 WHERE BridgeId = OLD.BridgeId; END;",
 
-                        "CREATE TABLE RegexChannels(RegexChannelId INTEGER PRIMARY KEY, GuildId REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, ChannelId INTEGER NOT NULL DEFAULT 0, Regex TEXT NULL DEFAULT \"\", Punishment INTEGER NOT NULL DEFAULT 0, PunishmentValue INTEGER NOT NULL DEFAULT 0, PunishmentMessage TEXT NOT NULL DEFAULT \"\", PunishmentDelete BOOL NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(ChannelId)"
+                        "CREATE TABLE RegexChannels(RegexChannelId INTEGER PRIMARY KEY, GuildId REFERENCES GuildConfigs(GuildId) ON DELETE CASCADE ON UPDATE CASCADE, ChannelId INTEGER NOT NULL DEFAULT 0, Regex TEXT NULL DEFAULT \"\", Punishment INTEGER NOT NULL DEFAULT 0, PunishmentValue INTEGER NOT NULL DEFAULT 0, PunishmentMessage TEXT NOT NULL DEFAULT \"\", PunishmentDelete BOOL NOT NULL DEFAULT 0, PunishmentTimeout INTEGER NOT NULL DEFAULT 0, IsDeleted BOOL NOT NULL DEFAULT 0, CreatedAt INTEGER NOT NULL DEFAULT 0, UpdatedAt INTEGER NOT NULL DEFAULT 0, UNIQUE(ChannelId)"
                     });
                     migrationVersion = 1;
                 }
