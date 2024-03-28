@@ -42,7 +42,7 @@ namespace SolarisBot.Discord.Modules.Reminders
             [Summary(description: "[Opt] Channel to wipe reminders from")] IChannel? channel = null
         )
         {
-            var query = _dbContext.Reminders.IsDeleted(false).ForGuild(Context.Guild.Id);
+            var query = _dbContext.Reminders.ForGuild(Context.Guild.Id);
             if (channel is not null)
                 query.ForChannel(channel.Id);
 

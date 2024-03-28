@@ -29,8 +29,5 @@ namespace SolarisBot.Database
 
         internal static IQueryable<DbReminder> ForChannel(this IQueryable<DbReminder> query, ulong id)
             => query.Where(x => x.ChannelId == id);
-
-        internal static IQueryable<DbReminder> IsDeleted(this IQueryable<DbReminder> query, bool deleted)
-            => query.Where(x => x.IsDeleted == deleted);
     }
 }

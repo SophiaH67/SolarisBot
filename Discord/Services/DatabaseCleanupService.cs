@@ -75,7 +75,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnUserLeftRemoveQuotesAsync(DatabaseContext dbCtx, SocketGuild guild, SocketUser user)
         {
-            var quotes = await dbCtx.Quotes.IsDeleted(false).ForGuild(guild.Id).Where(x => x.CreatorId == user.Id).ToArrayAsync();
+            var quotes = await dbCtx.Quotes.ForGuild(guild.Id).Where(x => x.CreatorId == user.Id).ToArrayAsync();
             if (quotes.Length == 0)
                 return false;
 
@@ -89,7 +89,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnUserLeftRemoveRemindersAsync(DatabaseContext dbCtx, SocketGuild guild, SocketUser user)
         {
-            var reminders = await dbCtx.Reminders.IsDeleted(false).ForGuild(guild.Id).ForUser(user.Id).ToArrayAsync();
+            var reminders = await dbCtx.Reminders.ForGuild(guild.Id).ForUser(user.Id).ToArrayAsync();
             if (reminders.Length == 0)
                 return false;
 
@@ -165,7 +165,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnChannelDestroyedRemoveRemindersAsync(IGuildChannel gChannel, DatabaseContext dbCtx)
         {
-            var reminders = await dbCtx.Reminders.IsDeleted(false).ForChannel(gChannel.Id).ToArrayAsync();
+            var reminders = await dbCtx.Reminders.ForChannel(gChannel.Id).ToArrayAsync();
             if (reminders.Length == 0)
                 return false;
 
@@ -179,7 +179,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnChannelDestroyedRemoveBridgesAsync(IGuildChannel gChannel, DatabaseContext dbCtx)
         {
-            var bridges = await dbCtx.Bridges.ForChannel(gChannel.Id).IsDeleted(false).ToArrayAsync();
+            var bridges = await dbCtx.Bridges.ForChannel(gChannel.Id).ToArrayAsync();
             if (bridges.Length == 0)
                 return false;
 
@@ -241,7 +241,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnLeftGuildRemoveBridgesAsync(SocketGuild guild, DatabaseContext dbCtx)
         {
-            var bridges = await dbCtx.Bridges.ForGuild(guild.Id).IsDeleted(false).ToArrayAsync();
+            var bridges = await dbCtx.Bridges.ForGuild(guild.Id).ToArrayAsync();
             if (bridges.Length == 0)
                 return false;
 

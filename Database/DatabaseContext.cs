@@ -24,6 +24,17 @@ namespace SolarisBot.Database
         public DbSet<DbRegexChannel> RegexChannels { get; set; }
 
         /// <summary>
+        /// Sets the filters for all queries to remove soft deleted entries
+        /// </summary>
+        protected override void OnModelCreating(ModelBuilder modelBuilder) //todo: [TEST] Do global query filters apply?
+        {
+            modelBuilder.Entity<DbQuote>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<DbReminder>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<DbBridge>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<DbRegexChannel>().HasQueryFilter(x => !x.IsDeleted);
+        }
+
+        /// <summary>
         /// Attempts to save changes to the database
         /// </summary>
         /// <returns>Number of changes, or -1 on error</returns>

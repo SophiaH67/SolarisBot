@@ -35,7 +35,7 @@ namespace SolarisBot.Discord.Modules.Fun
             var thisChannel = channel ?? Context.Channel;
             if (string.IsNullOrWhiteSpace(regex))
             {
-                var deleteChannel = await _dbContext.RegexChannels.IsDeleted(false).FirstOrDefaultAsync(x => x.ChannelId == thisChannel.Id);
+                var deleteChannel = await _dbContext.RegexChannels.FirstOrDefaultAsync(x => x.ChannelId == thisChannel.Id);
                 if (deleteChannel is null)
                 {
                     await Interaction.ReplyErrorAsync($"Failed to find a RegEx config for channel id {thisChannel.Id}");
@@ -60,7 +60,7 @@ namespace SolarisBot.Discord.Modules.Fun
             }
 
             var dbGuild = await _dbContext.GetOrCreateTrackedGuildAsync(Context.Guild.Id, x => x.Include(y => y.RegexChannels));
-            var dbChannel = dbGuild.RegexChannels.FirstOrDefault(x => !x.IsDeleted && x.ChannelId == thisChannel.Id)
+            var dbChannel = dbGuild.RegexChannels.FirstOrDefault(x => x.ChannelId == thisChannel.Id)
                 ?? new DbRegexChannel() { GuildId = Context.Guild.Id, ChannelId = thisChannel.Id };
 
             dbChannel.Regex = regex;

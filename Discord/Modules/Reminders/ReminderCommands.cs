@@ -48,7 +48,7 @@ namespace SolarisBot.Discord.Modules.Reminders
                 return;
             }
 
-            var userReminders = await _dbContext.Reminders.IsDeleted(false).ForUser(Context.User.Id).ToListAsync();
+            var userReminders = await _dbContext.Reminders.ForUser(Context.User.Id).ToListAsync();
             if (userReminders.Count >= _botConfig.MaxRemindersPerUser)
             {
                 await Interaction.ReplyErrorAsync($"Reached maximum reminder count of **{_botConfig.MaxRemindersPerUser}**");
@@ -111,7 +111,7 @@ namespace SolarisBot.Discord.Modules.Reminders
         [SlashCommand("list", "List your reminders")]
         public async Task ListRemindersAsync()
         {
-            var reminders = await _dbContext.Reminders.IsDeleted(false).ForUser(Context.User.Id).ToArrayAsync();
+            var reminders = await _dbContext.Reminders.ForUser(Context.User.Id).ToArrayAsync();
 
             if (reminders.Length == 0)
             {
@@ -129,7 +129,7 @@ namespace SolarisBot.Discord.Modules.Reminders
             [Summary(description: "Id of reminder")] ulong id
         )
         {
-            var reminder = await _dbContext.Reminders.IsDeleted(false).ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == id);
+            var reminder = await _dbContext.Reminders.ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == id);
             if (reminder is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);

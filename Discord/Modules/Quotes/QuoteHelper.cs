@@ -11,7 +11,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             if (author is null && creator is null && id is null && content is null && offset != 0)
                 return Array.Empty<DbQuote>();
 
-            IQueryable<DbQuote> dbQuery = dbCtx.Quotes.IsDeleted(false);
+            IQueryable<DbQuote> dbQuery = dbCtx.Quotes;
             if (guild != 0)
                 dbQuery = dbQuery.ForGuild(guild);
 

@@ -23,10 +23,4 @@ namespace SolarisBot.Database
         public override string ToString() //todo: [Logging] Add better ToString?
             => Regex;
     }
-
-    internal static class DbRegexChannelExtensions
-    {
-        internal static IQueryable<DbRegexChannel> IsDeleted(this IQueryable<DbRegexChannel> query, bool isDeleted)
-            => query.Where(x => x.IsDeleted == isDeleted);
-    }
 }

@@ -28,8 +28,5 @@ namespace SolarisBot.Database
     {
         internal static IQueryable<DbQuote> ForGuild(this IQueryable<DbQuote> query, ulong id)
             => query.Where(x => x.GuildId == id);
-
-        internal static IQueryable<DbQuote> IsDeleted(this IQueryable<DbQuote> query, bool isDeleted)
-            => query.Where(x => x.IsDeleted == isDeleted);
     }
 }
