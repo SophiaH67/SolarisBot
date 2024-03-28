@@ -89,7 +89,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnUserLeftRemoveRemindersAsync(DatabaseContext dbCtx, SocketGuild guild, SocketUser user)
         {
-            var reminders = await dbCtx.Reminders.ForGuild(guild.Id).ForUser(user.Id).ToArrayAsync();
+            var reminders = await dbCtx.Reminders.IsDeleted(false).ForGuild(guild.Id).ForUser(user.Id).ToArrayAsync();
             if (reminders.Length == 0)
                 return false;
 
@@ -165,7 +165,7 @@ namespace SolarisBot.Discord.Services
         /// </summary>
         private async Task<bool> OnChannelDestroyedRemoveRemindersAsync(IGuildChannel gChannel, DatabaseContext dbCtx)
         {
-            var reminders = await dbCtx.Reminders.ForChannel(gChannel.Id).ToArrayAsync();
+            var reminders = await dbCtx.Reminders.IsDeleted(false).ForChannel(gChannel.Id).ToArrayAsync();
             if (reminders.Length == 0)
                 return false;
 
