@@ -1,4 +1,7 @@
-﻿# SolarisBot
+﻿# THIS PROJECT IS NOT COMPLETE AND WILL NOT RUN IN THE CURRENT STATE
+Why did I not just make these changes in a separate branch you ask? Because I simply wanted to do one or two changes and have lost control and am basically reworking the whole DB system now as I want to try soft deletion and some other common DB principles
+
+# SolarisBot
 A simple bot I made for my own server because I felt like it
 
 ## Features
