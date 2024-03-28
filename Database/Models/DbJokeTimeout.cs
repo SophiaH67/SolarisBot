@@ -9,6 +9,8 @@ namespace SolarisBot.Database
         public ulong UserId { get; set; } = ulong.MinValue;
         public ulong GuildId { get; set; } = ulong.MinValue;
         public ulong NextUse { get; set; } = ulong.MinValue;
+        public bool IsDeleted { get; set; } = false; //todo: impl
+
 
         public DbJokeTimeout() { }
     }
