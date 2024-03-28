@@ -11,7 +11,7 @@ using Color = Discord.Color;
 namespace SolarisBot.Discord.Modules.Roles
 {
     [Module("roles/customcolor"), Group("customcolor", "Tweak your custom color (Requires permission role)"), RequireContext(ContextType.Guild)]
-    public sealed class CustomColorCommands : SolarisInteractionModuleBase
+    public sealed class CustomColorCommands : SolarisInteractionModuleBase //todo: full wipe of missing command
     {
         private readonly ILogger<CustomColorCommands> _logger;
         private readonly DatabaseContext _dbContext;
