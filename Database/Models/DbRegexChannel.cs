@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 
 namespace SolarisBot.Database
 {
-    [PrimaryKey(nameof(ChannelId))]
+    [PrimaryKey(nameof(RegexChannelId))]
     public class DbRegexChannel : DbModelBase
     {
-        public ulong ChannelId { get; set; } = ulong.MinValue;
+        public ulong RegexChannelId { get; set; } = ulong.MinValue;
         public ulong GuildId { get; set; } = ulong.MinValue;
+        public ulong ChannelId { get; set; } = ulong.MinValue;
         public string Regex { get; set; } = string.Empty;
         public ulong AppliedRoleId { get; set; } = ulong.MinValue;
         public string PunishmentMessage { get; set; } = string.Empty;
         public bool PunishmentDelete { get; set; } = false;
         public bool IsDeleted { get; set; } = false; //todo: impl
 
-        public override string ToString()
+        public override string ToString() //todo: [Logging] Add better ToString?
             => Regex;
     }
 }
