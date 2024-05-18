@@ -145,7 +145,7 @@ namespace SolarisBot.Database
                 }
 
                 if (migrationVersion > version)
-                    Database.ExecuteSqlRaw($"PRAGMA user_version = {migrationVersion}");
+                    Database.ExecuteSql($"PRAGMA user_version = {migrationVersion}");
 
                 transaction.Commit();
                 _logger.LogInformation("Database migration complete: {oldVersion} => {newVersion}", version, migrationVersion);
