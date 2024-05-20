@@ -57,7 +57,7 @@ namespace SolarisBot.Database
         /// <summary>
         /// Attempts to migrate the database, throws on error
         /// </summary>
-        private void TryMigrate()
+        private void TryMigrate() //todo: [TEST] should the raw calls be async?
         {
             if (_hasMigrated) return;
 

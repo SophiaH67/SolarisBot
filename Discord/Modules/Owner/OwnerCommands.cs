@@ -1,8 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SolarisBot.Database;
 using SolarisBot.Discord.Common;
 using SolarisBot.Discord.Common.Attributes;
 using SolarisBot.Discord.Services;
@@ -16,12 +18,14 @@ namespace SolarisBot.Discord.Modules.Owner
         private readonly IServiceProvider _services;
         private readonly ILogger<OwnerCommands> _logger;
         private readonly StatisticsService _stats;
+        private readonly DatabaseContext _databaseContext;
 
-        internal OwnerCommands(IServiceProvider services, ILogger<OwnerCommands> logger, StatisticsService stats)
+        internal OwnerCommands(IServiceProvider services, ILogger<OwnerCommands> logger, StatisticsService stats, DatabaseContext databaseContext)
         {
             _services = services;
             _logger = logger;
             _stats = stats;
+            _databaseContext = databaseContext;
         }
 
         [SlashCommand("set-status", "Set the status of the bot")]
@@ -67,6 +71,20 @@ namespace SolarisBot.Discord.Modules.Owner
             }
 
             await Interaction.ReplyAsync("Statistics", sb.ToString());
+        }
+
+        [SlashCommand("sql-run", "Run SQL")]
+        public async Task SqlRunAsync(string query) //todo: [TEST] should the raw calls be async, does this work?
+        {
+            var sql = _databaseContext.Database.ExecuteSqlRaw(query); //todo: [LOGGING] Log this
+            await Interaction.ReplyAsync($"Ran raw SQL, {sql} lines affected");
+        }
+
+        [SlashCommand("sql-get", "Get SQL")]
+        public async Task SqlGetAsync(string query) //todo: [TEST] should the raw calls be async, does this work?
+        {
+            var sql = _databaseContext.Database.SqlQueryRaw<List<Dictionary<string, string>>>(query); //todo: [LOGGING] Log this
+            await Interaction.ReplyAsync("This is a test!"); //todo: [FEATURE] Implement output (If possible)
         }
     }
 }
