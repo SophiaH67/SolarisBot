@@ -20,7 +20,7 @@ namespace SolarisBot.Database
         public ulong PunishmentTimeout { get; set; } = ulong.MinValue;
         public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
-        public override string ToString() //todo: [Logging] Add better ToString?
+        public override string ToString() //todo: [LOGGING] Add better ToString?
             => Regex;
     }
 }

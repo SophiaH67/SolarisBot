@@ -21,7 +21,7 @@ namespace SolarisBot.Discord.Services
         private readonly DiscordSocketClient _client;
         private readonly IServiceProvider _provider;
 
-        public DatabaseCleanupService(ILogger<DatabaseCleanupService> logger, DiscordSocketClient client, IServiceProvider provider) //todo: remove as much as possible from here
+        public DatabaseCleanupService(ILogger<DatabaseCleanupService> logger, DiscordSocketClient client, IServiceProvider provider) //todo: [REFACTOR] Remove as much as possible from here
         {
             _client = client;
             _provider = provider;

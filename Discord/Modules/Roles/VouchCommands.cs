@@ -49,7 +49,7 @@ namespace SolarisBot.Discord.Modules.Roles
                 return;
             }
 
-            if (FindRole(dbGuild.VouchPermissionRoleId) is null) //todo: logging?
+            if (FindRole(dbGuild.VouchPermissionRoleId) is null) //todo: [LOGGING] Is logging needed if one of these fails?
             {
                 await Interaction.ReplyDeletedRoleErrorAsync("Vouch permission"); //todo: [TEST] Does this trigger?
                 return;
