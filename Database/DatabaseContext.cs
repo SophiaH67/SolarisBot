@@ -68,7 +68,8 @@ namespace SolarisBot.Database
 
             try
             {
-                var transaction = Database.BeginTransaction();
+                _logger.LogInformation($"Beginning SQL update transaction");
+                using var transaction = Database.BeginTransaction();
                 var queries = new List<string>();
 
                 if (version < 1)
@@ -128,13 +129,23 @@ namespace SolarisBot.Database
 
                 if (queries.Count > 0)
                 {
-                    foreach (var query in queries) //todo: log queries
+                    foreach (var query in queries)
+                    {
+                        _logger.LogDebug("Adding {query} to SQL update transaction", query);
                         Database.ExecuteSqlRaw(query);
+                        _logger.LogInformation("Added {query} to SQL update transaction", query);
+                    }
+
                 }
 
                 if (migrationVersion > version)
+                {
+                    _logger.LogDebug("Setting user_version of database to {version} in SQL update transaction", migrationVersion);
                     Database.ExecuteSql($"PRAGMA user_version = {migrationVersion}");
+                    _logger.LogDebug("Set user_version of database to {version} in SQL update transaction", migrationVersion);
+                }
 
+                _logger.LogInformation($"Comitting SQL update transaction");
                 transaction.Commit();
                 _logger.LogInformation("Database migration complete: {oldVersion} => {newVersion}", version, migrationVersion);
                 _hasMigrated = true;
