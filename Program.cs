@@ -56,7 +56,7 @@ namespace SolarisBot
                     (
                         $"Data Source={Utils.PathDatabaseFile};Pooling=false"),
                         ServiceLifetime.Transient
-                    );
+                    ); //todo: [FEATURE] Backups of database?
 
                     services.AddHttpClient();
 
