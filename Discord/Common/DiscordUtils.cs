@@ -80,6 +80,9 @@ namespace SolarisBot.Discord.Common
         internal static string GetCustomColorRoleName(IUser user)
             => $"{CustomColorRolePrefix} {user.Id}";
 
+        internal static string GetIdFromCustomColorRoleName(string customColorRoleName)
+            => customColorRoleName.Replace($"{CustomColorRolePrefix} ", string.Empty);
+
         /// <summary>
         /// Gets a role by ID
         /// </summary>
