@@ -57,7 +57,7 @@ namespace SolarisBot.Database
         /// <summary>
         /// Attempts to migrate the database, throws on error
         /// </summary>
-        private void TryMigrate() //todo: [FEATURE] code first, data validation?
+        private void TryMigrate()
         {
             if (_hasMigrated) return;
 
@@ -128,7 +128,7 @@ namespace SolarisBot.Database
 
                 if (queries.Count > 0)
                 {
-                    foreach (var query in queries)
+                    foreach (var query in queries) //todo: log queries
                         Database.ExecuteSqlRaw(query);
                 }
 
