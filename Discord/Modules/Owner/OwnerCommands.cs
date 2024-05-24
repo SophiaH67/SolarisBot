@@ -74,16 +74,16 @@ namespace SolarisBot.Discord.Modules.Owner
         }
 
         [SlashCommand("sql-run", "Run SQL")]
-        public async Task SqlRunAsync(string query) //todo: [TEST] should the raw calls be async, does this work?
+        public async Task SqlRunAsync(string query) //todo: [TEST] does this work?
         {
-            var sql = _databaseContext.Database.ExecuteSqlRaw(query); //todo: [LOGGING] Log this
+            var sql = await _databaseContext.Database.ExecuteSqlRawAsync(query); //todo: [LOGGING] Log this
             await Interaction.ReplyAsync($"Ran raw SQL, {sql} lines affected");
         }
 
         [SlashCommand("sql-get", "Get SQL")]
-        public async Task SqlGetAsync(string query) //todo: [TEST] should the raw calls be async, does this work?
+        public async Task SqlGetAsync(string query) //todo: [TEST] does this work?
         {
-            var sql = _databaseContext.Database.SqlQueryRaw<List<Dictionary<string, string>>>(query); //todo: [LOGGING] Log this
+            var sql = await _databaseContext.Database.SqlQueryRaw<object>(query).ToListAsync(); //todo: [LOGGING] Log this
             await Interaction.ReplyAsync("This is a test!"); //todo: [FEATURE] Implement output (If possible)
         }
     }
