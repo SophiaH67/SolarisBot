@@ -16,7 +16,7 @@ namespace SolarisBot.Database
         public DbReminder() { }
 
         public override string ToString()
-            => $"{Text}(Unix {CreatedAt}>{RemindAt})";
+            => $"[{ReminderId}]{Text}(Unix {CreatedAt}>{RemindAt})";
     }
 
     internal static class DbReminderExtensions

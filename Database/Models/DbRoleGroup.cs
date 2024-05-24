@@ -20,7 +20,7 @@ namespace SolarisBot.Database
         public DbRoleGroup() { } //To avoid defaults not setting
 
         public override string ToString()
-            => $"{Identifier}(Guild {GuildId})";
+            => $"[{RoleGroupId}]{Identifier}(Guild {GuildId})";
     }
 
     internal static class DbRoleGroupExtensions

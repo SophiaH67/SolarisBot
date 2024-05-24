@@ -17,6 +17,6 @@ namespace SolarisBot.Database
         public DbRoleConfig() { }
 
         public override string ToString()
-            => $"{Identifier}(Group {RoleGroupId})";
+            => $"[{RoleConfigId}]{Identifier}(Role {RoleId}, Group {RoleGroupId})";
     }
 }

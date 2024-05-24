@@ -21,6 +21,6 @@ namespace SolarisBot.Database
         public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public override string ToString() //todo: [LOGGING] Add better ToString?
-            => Regex;
+            => $"[{RegexChannelId}]{Regex}(Guild {GuildId}, Channel {ChannelId})";
     }
 }
