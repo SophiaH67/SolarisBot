@@ -41,7 +41,7 @@ namespace SolarisBot.Discord.Modules.Fun
         /// <summary>
         /// Automatically renames a user after saying "I am..." when enabled
         /// </summary>
-        private async Task CheckForAutoRename(SocketMessage message) //todo: [FIX] This makes no sense
+        private async Task CheckForAutoRename(SocketMessage message)
         {
             if (message is not IUserMessage userMessage || message.Author.IsWebhook || message.Author.IsBot || message.Author is not IGuildUser gUser)
                 return;
@@ -60,12 +60,12 @@ namespace SolarisBot.Discord.Modules.Fun
             if (guild is null || guild.JokeRenameOn == false)
                 return;
 
-            var newestTimeOut = guild.JokeTimeouts.Where(x => x.UserId == gUser.Id).OrderByDescending(x => x.NextUse).FirstOrDefault(); //todo: [OPTIMIZE] unoptimized?
+            var timeOut = guild.JokeTimeouts.Where(x => x.UserId == gUser.Id).FirstOrDefault(); //todo: [OPTIMIZE] unoptimized?
             var currTime = Utils.GetCurrentUnix();
-            if (newestTimeOut is not null && newestTimeOut.NextUse > currTime)
+            if (timeOut is not null && timeOut.NextUse > currTime)
                 return;
 
-            var newTimeOut = new DbJokeTimeout()
+            timeOut ??= new()
             {
                 UserId = gUser.Id,
                 GuildId = gUser.GuildId
@@ -74,17 +74,17 @@ namespace SolarisBot.Discord.Modules.Fun
             var cooldown = guild.JokeRenameTimeoutMin >= guild.JokeRenameTimeoutMax
                 ? guild.JokeRenameTimeoutMax
                 : Utils.Faker.Random.ULong(guild.JokeRenameTimeoutMin, guild.JokeRenameTimeoutMax);
-            newTimeOut.NextUse = currTime + cooldown;
+            timeOut.NextUse = currTime + cooldown;
 
-            _logger.LogDebug("Setting renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), newTimeOut.NextUse);
-            dbCtx.JokeTimeouts.Update(newTimeOut);
-            var (_, err) = await dbCtx.TrySaveChangesAsync(); //todo: [TEST] if new one gets created
+            _logger.LogDebug("Setting renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), timeOut.NextUse);
+            dbCtx.JokeTimeouts.Update(timeOut);
+            var (_, err) = await dbCtx.TrySaveChangesAsync(); //todo: [TEST] if saving works
             if (err is not null)
             {
-                _logger.LogError(err, "Failed to set renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), newTimeOut.NextUse);
+                _logger.LogError(err, "Failed to set renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), timeOut.NextUse);
                 return;
             }
-            _logger.LogInformation("Set renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), newTimeOut.NextUse);
+            _logger.LogInformation("Set renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), timeOut.NextUse);
 
             var logTimespan = TimeSpan.FromSeconds(cooldown);
             try

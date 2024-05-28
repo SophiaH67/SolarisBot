@@ -18,7 +18,6 @@ namespace SolarisBot.Database
         public string PunishmentMessage { get; set; } = string.Empty;
         public bool PunishmentDelete { get; set; } = false;
         public ulong PunishmentTimeout { get; set; } = ulong.MinValue;
-        public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public override string ToString()
             => $"[{RegexChannelId}]{Regex}(Guild {GuildId}, Channel {ChannelId})";

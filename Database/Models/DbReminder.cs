@@ -11,7 +11,6 @@ namespace SolarisBot.Database
         public ulong ChannelId { get; set; } = ulong.MinValue;
         public ulong RemindAt { get; set; } = ulong.MinValue;
         public string Text { get; set; } = string.Empty;
-        public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         public DbReminder() { }
 

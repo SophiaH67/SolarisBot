@@ -12,7 +12,6 @@ namespace SolarisBot.Database
         public bool AllowOnlyOne { get; set; } = false;
         public string Description { get; set; } = string.Empty;
         public ulong RequiredRoleId { get; set; } = ulong.MinValue;
-        public ulong? DeletedAt { get; set; } = null; //todo: [TEST] Do new DB Constraints and soft delete work?
 
         [ForeignKey(nameof(DbRoleConfig.RoleGroupId))]
         public virtual ICollection<DbRoleConfig> RoleConfigs { get; set; } = new HashSet<DbRoleConfig>();
