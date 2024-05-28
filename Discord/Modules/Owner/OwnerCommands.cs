@@ -83,7 +83,7 @@ namespace SolarisBot.Discord.Modules.Owner
         }
 
         [SlashCommand("sql-get", "Get SQL")]
-        public async Task SqlGetAsync(string query) //todo: [TEST] does this work?
+        public async Task SqlGetAsync(string query) //todo: [FIX] Raw Get
         {
             _logger.LogWarning("{intTag} Executing manual RAW get query {query}", GetIntTag(), query);
             var sql = await _databaseContext.Database.SqlQueryRaw<object>(query).ToListAsync();

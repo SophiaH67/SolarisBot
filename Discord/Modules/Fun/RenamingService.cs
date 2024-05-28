@@ -78,7 +78,7 @@ namespace SolarisBot.Discord.Modules.Fun
 
             _logger.LogDebug("Setting renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), timeOut.NextUse);
             dbCtx.JokeTimeouts.Update(timeOut);
-            var (_, err) = await dbCtx.TrySaveChangesAsync(); //todo: [TEST] if saving works
+            var (_, err) = await dbCtx.TrySaveChangesAsync();
             if (err is not null)
             {
                 _logger.LogError(err, "Failed to set renaming nextUse for user {user} in guild {guild} to {timeout}", gUser.Log(), gUser.Guild.Log(), timeOut.NextUse);
