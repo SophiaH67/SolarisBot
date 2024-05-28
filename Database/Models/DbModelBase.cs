@@ -8,7 +8,13 @@ namespace SolarisBot.Database
 {
     public abstract class DbModelBase
     {
-        public ulong CreatedAt { get; set; } = ulong.MinValue;
-        public ulong UpdatedAt { get; set; } = ulong.MinValue;
+        public DbModelBase()
+        {
+            CreatedAt = Utils.GetCurrentUnix();
+            UpdatedAt = CreatedAt;
+        }
+
+        public ulong CreatedAt { get; set; }
+        public ulong UpdatedAt { get; set; }
     }
 }
