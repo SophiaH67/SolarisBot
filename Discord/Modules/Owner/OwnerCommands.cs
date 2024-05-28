@@ -74,7 +74,7 @@ namespace SolarisBot.Discord.Modules.Owner
         }
 
         [SlashCommand("sql-run", "Run SQL")]
-        public async Task SqlRunAsync(string query) //todo: [TEST] does this work?
+        public async Task SqlRunAsync(string query)
         {
             _logger.LogWarning("{intTag} Executing manual RAW run query {query}", GetIntTag(), query);
             var sql = await _databaseContext.Database.ExecuteSqlRawAsync(query);

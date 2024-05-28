@@ -123,10 +123,14 @@ namespace SolarisBot.Discord.Services
                 return;
             }
 
-            if (result is ExecuteResult exeResult) //todo: [FEATURE] use innerexception when available
+            if (result is ExecuteResult exeResult)
             {
+                var exception = exeResult.Exception;
+                while(exception.InnerException is not null)
+                    exception = exception.InnerException;
+
                 _logger.LogError(exeResult.Exception, "Failed to execute interaction \"{interactionModule}\"(Module {module}, Id {interactionId}) for user {user} in channel {channel} of guild {guild}", cmdInfo?.Name ?? "N/A", cmdInfo?.Module.Name ?? "N/A", context.Interaction.Id, context.User.Log(), context.Channel?.Log() ?? "N/A", context.Guild?.Log() ?? "N/A");
-                await context.Interaction.ReplyErrorAsync($"{exeResult.Exception.GetType().Name}: {exeResult.Exception.Message}");
+                await context.Interaction.ReplyErrorAsync($"{exception.GetType().Name}: {exception.Message}");
             }
             else
             {
