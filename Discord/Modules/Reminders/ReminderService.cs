@@ -54,7 +54,7 @@ namespace SolarisBot.Discord.Modules.Reminders
             var nowUnix = Utils.GetCurrentUnix();
             //_logger.LogDebug("Checking Database for reminders");
             var dbCtx = _provider.GetRequiredService<DatabaseContext>();
-            var reminders = await dbCtx.Reminders.FromSql($"SELECT * FROM reminders WHERE time <= {nowUnix} AND deletedat is not null").ToArrayAsync(); //UInt equality not supported
+            var reminders = await dbCtx.Reminders.FromSql($"SELECT * FROM Reminders WHERE RemindAt <= {nowUnix} AND DeletedAt is not null").ToArrayAsync(); //UInt equality not supported
             if (reminders.Length == 0) //todo: [TEST] Does this bypass deletion
             {
                 //_logger.LogDebug("Checked database for reminders, none found");
