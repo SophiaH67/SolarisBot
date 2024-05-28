@@ -141,7 +141,8 @@ namespace SolarisBot.Database
                 if (migrationVersion > version)
                 {
                     _logger.LogDebug("Setting user_version of database to {version} in SQL update transaction", migrationVersion);
-                    Database.ExecuteSql($"PRAGMA user_version = {migrationVersion}");
+                    var query = $"PRAGMA user_version = {migrationVersion}";
+                    Database.ExecuteSqlRaw(query);
                     _logger.LogDebug("Set user_version of database to {version} in SQL update transaction", migrationVersion);
                 }
 
