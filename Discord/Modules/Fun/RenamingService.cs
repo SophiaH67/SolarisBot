@@ -41,7 +41,7 @@ namespace SolarisBot.Discord.Modules.Fun
         /// <summary>
         /// Automatically renames a user after saying "I am..." when enabled
         /// </summary>
-        private async Task CheckForAutoRename(SocketMessage message)
+        private async Task CheckForAutoRename(SocketMessage message) //todo: [FIX] This makes no sense
         {
             if (message is not IUserMessage userMessage || message.Author.IsWebhook || message.Author.IsBot || message.Author is not IGuildUser gUser)
                 return;
@@ -60,7 +60,7 @@ namespace SolarisBot.Discord.Modules.Fun
             if (guild is null || guild.JokeRenameOn == false)
                 return;
 
-            var newestTimeOut = guild.JokeTimeouts.OrderByDescending(x => x.NextUse).FirstOrDefault(); //todo: [OPTIMIZE] unoptimized?
+            var newestTimeOut = guild.JokeTimeouts.Where(x => x.UserId == gUser.Id).OrderByDescending(x => x.NextUse).FirstOrDefault(); //todo: [OPTIMIZE] unoptimized?
             var currTime = Utils.GetCurrentUnix();
             if (newestTimeOut is not null && newestTimeOut.NextUse > currTime)
                 return;
