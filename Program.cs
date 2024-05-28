@@ -66,7 +66,9 @@ namespace SolarisBot
                         GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers,
                         UseInteractionSnowflakeDate = false
                     }));
-                    services.AddSingleton<InteractionService>();
+
+                    //Fix for constructor of interaction service being broken (Provided by Discord.NET discord)
+                    services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
 
                     foreach (var service in Assembly.GetExecutingAssembly().GetTypes())
                     {
