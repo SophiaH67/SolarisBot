@@ -133,7 +133,7 @@ namespace SolarisBot.Discord.Modules.Roles
             await Interaction.ReplyAsync($"Succssfully deleted all **{roleCount}** custom color roles");
         }
 
-        [SlashCommand("delete-ownerless", "[REQUIRES MANAGE ROLES] Delete all custom color roles without owner"), DefaultMemberPermissions(GuildPermission.ManageRoles), RequireBotPermission(GuildPermission.ManageRoles)] //todo: [TEST] Does ownerless color role deletion work
+        [SlashCommand("delete-ownerless", "[REQUIRES MANAGE ROLES] Delete all custom color roles without owner"), DefaultMemberPermissions(GuildPermission.ManageRoles), RequireBotPermission(GuildPermission.ManageRoles)]
         public async Task DeleteAllMissingCustomColorRolesAsync()
         {
             var roles = Context.Guild.Roles.Where(x => x.Name.StartsWith(DiscordUtils.CustomColorRolePrefix));

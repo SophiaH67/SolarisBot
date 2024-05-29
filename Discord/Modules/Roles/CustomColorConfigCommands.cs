@@ -7,7 +7,7 @@ using SolarisBot.Discord.Common.Attributes;
 
 namespace SolarisBot.Discord.Modules.Roles
 {
-    [Module("roles/customcolor")]
+    [Module("roles/customcolor")] //todo: [FIX] Why is deletion not here?
     public sealed class CustomColorConfigCommands : SolarisInteractionModuleBase
     {
         private readonly ILogger<CustomColorConfigCommands> _logger;

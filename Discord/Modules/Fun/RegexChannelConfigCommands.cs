@@ -22,8 +22,9 @@ namespace SolarisBot.Discord.Modules.Fun
         }
 
         //todo: [FEATURE] list, service, cleanup
-
-        public async Task ConfigureRegexChannel //todo: [TEST] Test regex channel config
+        //todo: [TEST] Test regex channel config
+        [SlashCommand("add", "Add a regex channel")]
+        public async Task ConfigureRegexChannel 
         (
             [Summary(description: "[Opt] Target channel")] IChannel? channel = null,
             [Summary(description: "[Opt] Regex to enforce (None to disable)")] string regex = "",
