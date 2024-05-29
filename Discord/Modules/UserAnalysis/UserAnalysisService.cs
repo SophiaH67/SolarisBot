@@ -52,7 +52,7 @@ namespace SolarisBot.Discord.Modules.UserAnalysis
             var channel = await _client.GetChannelAsync(dbGuild.UserAnalysisChannelId);
             if (channel is null || channel is not IMessageChannel msgChannel) //todo: [FEATURE] Notify for this?
             {
-                _logger.LogDebug("Could not locate UserAnalysisChannel for guild {guild} with id {channelId}", dbGuild, dbGuild.UserAnalysisChannelId); //todo: [TEST] Does this trigger?
+                _logger.LogDebug("Could not locate UserAnalysisChannel for guild {guild} with id {channelId}", dbGuild, dbGuild.UserAnalysisChannelId);
                 return;
             }
 

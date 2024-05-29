@@ -12,7 +12,7 @@ namespace SolarisBot.Discord.Modules.Roles
     {
         private readonly ILogger<VouchCommands> _logger;
         private readonly DatabaseContext _dbContext;
-        internal VouchCommands(ILogger<VouchCommands> logger, DatabaseContext dbctx)
+        internal VouchCommands(ILogger<VouchCommands> logger, DatabaseContext dbctx) //todo: [FEATURE] Custom message
         {
             _dbContext = dbctx;
             _logger = logger;
@@ -51,7 +51,7 @@ namespace SolarisBot.Discord.Modules.Roles
 
             if (FindRole(dbGuild.VouchPermissionRoleId) is null) //todo: [LOGGING] Is logging needed if one of these fails?
             {
-                await Interaction.ReplyDeletedRoleErrorAsync("Vouch permission"); //todo: [TEST] Does this trigger?
+                await Interaction.ReplyDeletedRoleErrorAsync("Vouch permission");
                 return;
             }
             if (gUser.FindRole(dbGuild.VouchPermissionRoleId) is null)
@@ -61,7 +61,7 @@ namespace SolarisBot.Discord.Modules.Roles
             }
             if (FindRole(dbGuild.VouchRoleId) is null)
             {
-                await Interaction.ReplyDeletedRoleErrorAsync("Vouch"); //todo: [TEST] Does this trigger?
+                await Interaction.ReplyDeletedRoleErrorAsync("Vouch");
                 return;
             }
             if (gTargetUser.FindRole(dbGuild.VouchRoleId) is not null)

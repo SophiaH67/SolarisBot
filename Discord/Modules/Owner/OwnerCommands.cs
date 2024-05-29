@@ -81,14 +81,5 @@ namespace SolarisBot.Discord.Modules.Owner
             _logger.LogWarning("{intTag} Executed manual RAW run query {query}", GetIntTag(), query);
             await Interaction.ReplyAsync($"Ran raw SQL, {sql} lines affected");
         }
-
-        [SlashCommand("sql-get", "Get SQL")]
-        public async Task SqlGetAsync(string query) //todo: [FIX] Raw Get
-        {
-            _logger.LogWarning("{intTag} Executing manual RAW get query {query}", GetIntTag(), query);
-            var sql = await _databaseContext.Database.SqlQueryRaw<object>(query).ToListAsync();
-            _logger.LogWarning("{intTag} Executed manual RAW get query {query}", GetIntTag(), query);
-            await Interaction.ReplyAsync("This is a test!"); //todo: [FEATURE] Implement output (If possible)
-        }
     }
 }
