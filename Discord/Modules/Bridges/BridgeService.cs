@@ -48,39 +48,55 @@ namespace SolarisBot.Discord.Modules.Bridges
 
             foreach (var bridge in bridges)
             {
-                var channelId = bridge.ChannelAId == message.Channel.Id ? bridge.ChannelBId : bridge.ChannelAId;
-                var channel = await _client.GetChannelAsync(channelId);
+                var targetChannelId = bridge.ChannelAId == message.Channel.Id ? bridge.ChannelBId : bridge.ChannelAId;
+                var targetChannel = await _client.GetChannelAsync(targetChannelId);
 
-                if (channel is null)
+                if (targetChannel is null || targetChannel is not IMessageChannel targetMessageChannel)
                 {
-                    var tempCtx = _services.GetRequiredService<DatabaseContext>();
-                    tempCtx.Bridges.Remove(bridge);
-                    _logger.LogDebug("Deleting bridge {bridge}, could not locate channel {channel}", bridge, channelId);
-                    var (_, err) = await tempCtx.TrySaveChangesAsync();
-                    if (err is not null)
-                        _logger.LogError(err, "Failed deleting bridge {bridge}, could not locate channel {channel}", bridge, channelId);
-                    else
-                        _logger.LogInformation("Deleted bridge {bridge}, could not locate channel {channel}", bridge, channelId);
-
-                    var originChannel = await _client.GetChannelAsync(bridge.ChannelAId == channelId ? bridge.ChannelBId : bridge.ChannelAId);
-                    if (originChannel is null || originChannel is not IMessageChannel msgOriginChannel)
-                        continue;
-
-                    await BridgeHelper.TryNotifyChannelForBridgeDeletionAsync(msgOriginChannel, null, bridge, _logger, channelId == bridge.ChannelBId);
-                    continue;
+                    await DeleteBridgeAsync(bridge, targetChannelId);
                 }
-
-                try
+                else
                 {
-                    _logger.LogDebug("Sending message from user {user} via bridge {bridge}", message.Author.Log(), bridge);
-                    await ((IMessageChannel)channel).SendMessageAsync($"**[{bridge.Name}]{message.Author.GlobalName}:** {message.CleanContent}");
-                    _logger.LogInformation("Sent message from user {user} via bridge {bridge}", message.Author.Log(), bridge);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed sending message via brigde {bridge}", bridge);
+                    await SendMessageViaBridgeAsync(message, bridge, targetMessageChannel);
                 }
             }
+        }
+
+        private async Task SendMessageViaBridgeAsync(SocketMessage message, DbBridge bridge, IMessageChannel targetMessageChannel)
+        {
+            try
+            {
+                _logger.LogDebug("Sending message from user {user} via bridge {bridge}", message.Author.Log(), bridge);
+                await targetMessageChannel.SendMessageAsync($"**[{bridge.Name}] {message.Author.GlobalName}:** {message.CleanContent}");
+                _logger.LogInformation("Sent message from user {user} via bridge {bridge}", message.Author.Log(), bridge);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed sending message via brigde {bridge}", bridge);
+            }
+        }
+
+        private async Task DeleteBridgeAsync(DbBridge bridge, ulong missingChannelId)
+        {
+            var tempCtx = _services.GetRequiredService<DatabaseContext>();
+            tempCtx.Bridges.Remove(bridge);
+
+            _logger.LogDebug("Deleting bridge {bridge}, could not locate channel {channel}", bridge, missingChannelId);
+            var (_, err) = await tempCtx.TrySaveChangesAsync();
+            if (err is not null)
+                _logger.LogError(err, "Failed deleting bridge {bridge}, could not locate channel {channel}", bridge, missingChannelId);
+            else
+                _logger.LogInformation("Deleted bridge {bridge}, could not locate channel {channel}", bridge, missingChannelId);
+
+            var originChannelId = bridge.ChannelAId == missingChannelId ? bridge.ChannelBId : bridge.ChannelAId;
+            var originChannel = await _client.GetChannelAsync(originChannelId);
+            if (originChannel is null || originChannel is not IMessageChannel msgOriginChannel)
+            {
+                _logger.LogInformation("Could not notify origin channel {channel} of broken bridge as it could not be located", originChannelId);
+                return;
+            }
+
+            await BridgeHelper.TryNotifyChannelForBridgeDeletionAsync(msgOriginChannel, null, bridge, _logger, missingChannelId == bridge.ChannelBId);
         }
     }
 }
