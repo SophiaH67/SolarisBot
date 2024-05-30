@@ -179,7 +179,6 @@ namespace SolarisBot.Discord.Services
             var dbCtx = _provider.GetRequiredService<DatabaseContext>();
 
             var changes = await OnLeftGuildRemoveBridgesAsync(guild, dbCtx);
-            changes = changes || await OnLeftGuildRemoveGuildAsync(guild, dbCtx);
 
             if (!changes)
                 return;
@@ -190,20 +189,6 @@ namespace SolarisBot.Discord.Services
                 _logger.LogError(err, "Failed to delete references to guild {guild} from DB", guild.Log());
             else
                 _logger.LogInformation("Deleted references to guild {guild} from DB", guild.Log());
-        }
-
-        /// <summary>
-        /// Removes DbGuild when leaving a guild
-        /// </summary>
-        private async Task<bool> OnLeftGuildRemoveGuildAsync(SocketGuild guild, DatabaseContext dbCtx)
-        {
-            var dbGuild = await dbCtx.GetGuildByIdAsync(guild.Id);
-            if (dbGuild is null)
-                return false;
-
-            _logger.LogDebug("Removing guild for deleted guild {guild}", guild.Log());
-            dbCtx.GuildConfigs.Remove(dbGuild);
-            return true;
         }
 
         /// <summary>
