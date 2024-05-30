@@ -62,33 +62,64 @@ namespace SolarisBot.Discord.Modules.Reminders
             }
 
             _logger.LogDebug("Sending out {reminders} reminders", reminders.Length);
+            var remindersToDelete = new List<DbReminder>();
             foreach (var reminder in reminders)
             {
-                try
+                var result = await SendReminderAsync(reminder);
+                if (result)
                 {
-                    var channel = await _client.GetChannelAsync(reminder.ChannelId);
-                    if (channel is not null && channel is IMessageChannel msgChannel)
-                    {
-                        _logger.LogDebug("Reminding user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
-                        var embed = EmbedFactory.Default($"**{reminder.Text}**\n*(Created <t:{reminder.CreatedAt}:f>)*");
-                        await msgChannel.SendMessageAsync($"Here is your reminder <@{reminder.UserId}>!", embed: embed);
-                        _logger.LogInformation("Reminded user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed reminding user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
+                    remindersToDelete.Add(reminder);
                 }
             }
 
-            _logger.LogInformation("Reminders finished, removing {reminders} reminders from DB", reminders.Length);
-            dbCtx.Reminders.RemoveRange(reminders);
+            if (remindersToDelete.Count == 0)
+            {
+                _logger.LogInformation("Reminders finished, no reminders to delete");
+                return;
+            }
+
+            _logger.LogInformation("Reminders finished, removing {reminders} reminders from DB", remindersToDelete.Count);
+            dbCtx.Reminders.RemoveRange(remindersToDelete);
 
             var (_, err) = await dbCtx.TrySaveChangesAsync();
             if (err is not null)
-                _logger.LogError(err, "Failed to remove {reminders} reminders from DB", reminders.Length);
+                _logger.LogError(err, "Failed to remove {reminders} reminders from DB", remindersToDelete.Count);
             else
-                _logger.LogInformation("Removed {reminders} reminders from DB", reminders.Length);
+                _logger.LogInformation("Removed {reminders} reminders from DB", remindersToDelete.Count);
+        }
+
+        private async Task<bool> SendReminderAsync(DbReminder reminder)
+        {
+            try
+            {
+                _logger.LogDebug("Requesting required channel {channel} and user {user} for reminder {reminder}", reminder.ChannelId, reminder.UserId, reminder);
+                var channel = await _client.GetChannelAsync(reminder.ChannelId);
+                if (channel is null || channel is not IMessageChannel msgChannel)
+                {
+                    _logger.LogInformation("Failed to find channel {channel} for reminder {reminder}", reminder.ChannelId, reminder);
+                    return true;
+                }
+
+                var user = await channel.GetUserAsync(reminder.UserId);
+                if (user is null)
+                {
+                    _logger.LogInformation("Failed to find user {user} for reminder {reminder}", reminder.UserId, reminder);
+                    return true;
+                }
+                _logger.LogDebug("Received data for channel {channel} and user {user} for reminder {reminder}", msgChannel.Log(), user.Log(), reminder);
+
+                _logger.LogDebug("Reminding user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
+                var embed = EmbedFactory.Default($"**{reminder.Text}**\n*(Created <t:{reminder.CreatedAt}:f>)*");
+                await msgChannel.SendMessageAsync($"Here is your reminder <@{reminder.UserId}>!", embed: embed);
+                _logger.LogInformation("Reminded user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed reminding user {user} in channel {channel} in guild {guild} / Removing from DB", reminder.UserId, reminder.ChannelId, reminder.GuildId);
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }

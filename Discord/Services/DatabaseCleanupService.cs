@@ -57,7 +57,6 @@ namespace SolarisBot.Discord.Services
             var dbCtx = _provider.GetRequiredService<DatabaseContext>();
 
             var changes = await OnUserLeftRemoveQuotesAsync(dbCtx, guild, user);
-            changes = changes || await OnUserLeftRemoveRemindersAsync(dbCtx, guild, user);
 
             if (!changes)
                 return;
@@ -81,20 +80,6 @@ namespace SolarisBot.Discord.Services
 
             _logger.LogDebug("Removing {quotes} related quotes for left user {user} in guild {guild}", quotes.Length, user.Log(), guild.Log());
             dbCtx.Quotes.RemoveRange(quotes);
-            return true;
-        }
-
-        /// <summary>
-        /// Deletes associated DbReminders for left user
-        /// </summary>
-        private async Task<bool> OnUserLeftRemoveRemindersAsync(DatabaseContext dbCtx, SocketGuild guild, SocketUser user)
-        {
-            var reminders = await dbCtx.Reminders.ForGuild(guild.Id).ForUser(user.Id).ToArrayAsync();
-            if (reminders.Length == 0)
-                return false;
-
-            _logger.LogDebug("Removing {reminders} related reminders for left user {user} in guild {guild}", reminders.Length, user.Log(), guild.Log());
-            dbCtx.Reminders.RemoveRange(reminders);
             return true;
         }
         #endregion
@@ -147,7 +132,6 @@ namespace SolarisBot.Discord.Services
             var dbCtx = _provider.GetRequiredService<DatabaseContext>();
 
             var changes = await OnChannelDestroyedRemoveBridgesAsync(gChannel, dbCtx);
-            changes = changes || await OnChannelDestroyedRemoveRemindersAsync(gChannel, dbCtx);
 
             if (!changes)
                 return;
@@ -158,20 +142,6 @@ namespace SolarisBot.Discord.Services
                 _logger.LogError(err, "Failed to delete references to channel {channel} in guild {guild} from DB", gChannel.Log(), gChannel.Guild.Log());
             else
                 _logger.LogInformation("Deleted references to channel {channel} in guild {guild} from DB", gChannel.Log(), gChannel.Guild.Log());
-        }
-
-        /// <summary>
-        /// Removes all DbReminders associated with a destroyed channel
-        /// </summary>
-        private async Task<bool> OnChannelDestroyedRemoveRemindersAsync(IGuildChannel gChannel, DatabaseContext dbCtx)
-        {
-            var reminders = await dbCtx.Reminders.ForChannel(gChannel.Id).ToArrayAsync();
-            if (reminders.Length == 0)
-                return false;
-
-            _logger.LogDebug("Removing {reminders} related reminders for deleted channel {channel} in guild {guild}", reminders.Length, gChannel.Log(), gChannel.Guild.Log());
-            dbCtx.Reminders.RemoveRange(reminders);
-            return true;
         }
 
         /// <summary>
