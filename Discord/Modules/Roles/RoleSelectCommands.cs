@@ -185,7 +185,7 @@ namespace SolarisBot.Discord.Modules.Roles
                         rolesToAdd.Add(roleConfig);
                 }
 
-                if (rolesToAdd.Any())
+                if (rolesToAdd.Any()) //todo: [FEATURE] implement validity checks
                 {
                     var rolesToAddText = string.Join(", ", rolesToAdd.Select(x => $"{x.Identifier}(<@&{x.RoleId}>)"));
                     _logger.LogDebug("{intTag} Adding roles {addedRoles} to user {userData} in guild {guild}", GetIntTag(), rolesToAddText, gUser.Log(), Context.Guild.Log());
