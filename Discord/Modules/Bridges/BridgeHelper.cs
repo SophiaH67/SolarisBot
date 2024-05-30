@@ -16,14 +16,14 @@ namespace SolarisBot.Discord.Modules.Bridges
 
             try
             {
-                logger.LogDebug("Notifying channel {channel} in guild {guild} of deleted bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
-                var notifyEmbed = EmbedFactory.Default($"Bridge {bridge.ToDiscordInfoString()} to channel {otherChannel?.ToDiscordInfoString() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString()} in guild {gOtherChannel?.Guild.ToDiscordInfoString() ?? $"**{(bridgeGroupB ? bridge.GuildBId : bridge.GuildAId)}**"} has been removed");
+                logger.LogDebug("Notifying channel {channel} in guild {guild} of broken bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
+                var notifyEmbed = EmbedFactory.Default($"Bridge {bridge.ToDiscordInfoString()} to channel {otherChannel?.ToDiscordInfoString() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString()} in guild {gOtherChannel?.Guild.ToDiscordInfoString() ?? $"**{(bridgeGroupB ? bridge.GuildBId : bridge.GuildAId)}**"} has been broken");
                 await msgChannel.SendMessageAsync(embed: notifyEmbed);
-                logger.LogInformation("Notified channel {channel} in guild {guild} of deleted bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
+                logger.LogInformation("Notified channel {channel} in guild {guild} of broken bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed notifying channel {channel} in guild {guild} of deleted bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
+                logger.LogError(ex, "Failed notifying channel {channel} in guild {guild} of broken bridge {bridge}", otherChannel?.Log() ?? (bridgeGroupB ? bridge.ChannelBId : bridge.ChannelAId).ToString(), gOtherChannel?.Guild.Log() ?? (bridgeGroupB ? bridge.GuildBId : bridge.GuildAId).ToString(), bridge);
             }
         }
     }

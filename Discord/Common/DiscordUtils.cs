@@ -65,7 +65,7 @@ namespace SolarisBot.Discord.Common
         /// Returns a formatted version of Log for use in embeds
         /// </summary>
         internal static string ToDiscordInfoString(this IChannel channel)
-            => $"**{channel.Name}** *({channel.Id})*";
+            => $"**{channel.Name}** *(ID {channel.Id})*";
         #endregion
 
         #region Naming
