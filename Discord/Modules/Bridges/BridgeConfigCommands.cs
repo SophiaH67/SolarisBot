@@ -56,12 +56,12 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "Id of target channel")] string channelId
         )
         {
-            if (!ulong.TryParse(guildId, out var pGuild))
+            if (!ulong.TryParse(guildId, out var pGuild) || pGuild == 0)
             {
                 await Interaction.ReplyErrorAsync("Could not parse guild id");
                 return;
             }
-            if (!ulong.TryParse(channelId, out var pChannel))
+            if (!ulong.TryParse(channelId, out var pChannel) || pGuild == 1)
             {
                 await Interaction.ReplyErrorAsync("Could not parse channel id");
                 return;
@@ -79,6 +79,9 @@ namespace SolarisBot.Discord.Modules.Bridges
                 await Interaction.ReplyErrorAsync("Can not create a bridge to same channel");
                 return;
             }
+
+            //Long interaction, so deffered
+            await Interaction.DeferAsync();
 
             var bridgesHere = await _dbContext.Bridges.ForGuild(Context.Guild.Id).CountAsync();
             if (bridgesHere > _config.MaxBridgesPerGuild)
@@ -148,6 +151,7 @@ namespace SolarisBot.Discord.Modules.Bridges
                 ChannelBId = otherChannel.Id
             };
             _dbContext.Bridges.Add(dbBridge);
+
             _logger.LogDebug("{intTag} Adding bridge {bridge} between channel {channel} in guild {guild} and channel {otherChannel} in guild {otherGuild}", GetIntTag(), dbBridge, Context.Channel.Log(), Context.Guild.Log(), otherChannel.Log(), otherGuild.Log());
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation("{intTag} Added bridge {bridge} between channel {channel} in guild {guild} and channel {otherChannel} in guild {otherGuild}", GetIntTag(), dbBridge, Context.Channel.Log(), Context.Guild.Log(), otherChannel.Log(), otherGuild.Log());

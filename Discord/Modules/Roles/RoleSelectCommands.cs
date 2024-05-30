@@ -130,7 +130,7 @@ namespace SolarisBot.Discord.Modules.Roles
                 await Interaction.ReplyErrorAsync("No selections have been made");
                 return;
             }
-            if (!ulong.TryParse(rgid, out var parsedGid))
+            if (!ulong.TryParse(rgid, out var parsedGid) || parsedGid == 0)
             {
                 await Interaction.ReplyErrorAsync($"Could not parse RGId **{rgid}**");
                 return;
