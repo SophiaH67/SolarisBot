@@ -32,18 +32,14 @@ namespace SolarisBot.Discord.Services
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _client.RoleDeleted += OnRoleDeletedHandleAsync;
-            _client.ChannelDestroyed += OnChannelDestroyedHandleAsync;
             _client.UserLeft += OnUserLeftHandleAsync;
-            _client.LeftGuild += OnLeftGuildHandleAsync;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _client.RoleDeleted -= OnRoleDeletedHandleAsync;
-            _client.ChannelDestroyed -= OnChannelDestroyedHandleAsync;
             _client.UserLeft -= OnUserLeftHandleAsync;
-            _client.LeftGuild -= OnLeftGuildHandleAsync;
             return Task.CompletedTask;
         }
         #endregion
@@ -116,106 +112,6 @@ namespace SolarisBot.Discord.Services
 
             _logger.LogDebug("Deleting match {dbRole} for deleted role {role} in DB", dbRole, role.Log());
             dbCtx.RoleConfigs.Remove(dbRole);
-            return true;
-        }
-        #endregion
-
-        #region Events - OnChannelDestroyed
-        /// <summary>
-        /// Handles all OnChannelDestroyed events
-        /// </summary>
-        private async Task OnChannelDestroyedHandleAsync(SocketChannel channel)
-        {
-            if (channel is not IGuildChannel gChannel)
-                return;
-
-            var dbCtx = _provider.GetRequiredService<DatabaseContext>();
-
-            var changes = await OnChannelDestroyedRemoveBridgesAsync(gChannel, dbCtx);
-
-            if (!changes)
-                return;
-
-            _logger.LogDebug("Deleting references to channel {channel} in guild {guild} from DB", gChannel.Log(), gChannel.Guild.Log());
-            var (_, err) = await dbCtx.TrySaveChangesAsync();
-            if (err is not null)
-                _logger.LogError(err, "Failed to delete references to channel {channel} in guild {guild} from DB", gChannel.Log(), gChannel.Guild.Log());
-            else
-                _logger.LogInformation("Deleted references to channel {channel} in guild {guild} from DB", gChannel.Log(), gChannel.Guild.Log());
-        }
-
-        /// <summary>
-        /// Removes all DbBridges connected with a destroyed channel
-        /// </summary>
-        private async Task<bool> OnChannelDestroyedRemoveBridgesAsync(IGuildChannel gChannel, DatabaseContext dbCtx)
-        {
-            var bridges = await dbCtx.Bridges.ForChannel(gChannel.Id).ToArrayAsync();
-            if (bridges.Length == 0)
-                return false;
-
-            _logger.LogDebug("Removing {bridges} bridges for deleted channel {channel} in guild {guild}", bridges, gChannel.Log(), gChannel.Guild.Log());
-            dbCtx.Bridges.RemoveRange(bridges);
-
-            foreach (var bridge in bridges)
-            {
-                var useB = gChannel.Id == bridge.ChannelAId;
-
-                var notifyChannel = await _client.GetChannelAsync(useB ? bridge.ChannelBId : bridge.ChannelAId);
-                if (notifyChannel is null || notifyChannel is not IMessageChannel msgNotifyChannel)
-                    continue;
-
-                await BridgeHelper.TryNotifyChannelForBridgeDeletionAsync(msgNotifyChannel, gChannel, bridge, _logger, !useB);
-            }
-            return true;
-        }
-        #endregion
-
-        #region Events - OnLeftGuild
-        /// <summary>
-        /// Handles all OnLeftGuild events
-        /// </summary>
-        private async Task OnLeftGuildHandleAsync(SocketGuild guild)
-        {
-            var dbCtx = _provider.GetRequiredService<DatabaseContext>();
-
-            var changes = await OnLeftGuildRemoveBridgesAsync(guild, dbCtx);
-
-            if (!changes)
-                return;
-
-            _logger.LogDebug("Deleting references to guild {guild} from DB", guild.Log());
-            var (_, err) = await dbCtx.TrySaveChangesAsync();
-            if (err is not null)
-                _logger.LogError(err, "Failed to delete references to guild {guild} from DB", guild.Log());
-            else
-                _logger.LogInformation("Deleted references to guild {guild} from DB", guild.Log());
-        }
-
-        /// <summary>
-        /// Removes bridges when leaving a guild
-        /// </summary>
-        private async Task<bool> OnLeftGuildRemoveBridgesAsync(SocketGuild guild, DatabaseContext dbCtx)
-        {
-            var bridges = await dbCtx.Bridges.ForGuild(guild.Id).ToArrayAsync();
-            if (bridges.Length == 0)
-                return false;
-
-            _logger.LogDebug("Removing {bridges} bridges for deleted guild {guild}", bridges.Length, guild.Log());
-            dbCtx.Bridges.RemoveRange(bridges);
-
-            foreach(var bridge in bridges)
-            {
-                if (bridge.GuildAId == guild.Id && bridge.GuildBId == guild.Id)
-                    continue;
-
-                var useB = guild.Id == bridge.GuildAId;
-
-                var notifyChannel = await _client.GetChannelAsync(useB ? bridge.ChannelBId : bridge.ChannelAId);
-                if (notifyChannel is null || notifyChannel is not IMessageChannel msgNotifyChannel)
-                    continue;
-
-                await BridgeHelper.TryNotifyChannelForBridgeDeletionAsync(msgNotifyChannel, null, bridge, _logger, !useB);
-            }
             return true;
         }
         #endregion
