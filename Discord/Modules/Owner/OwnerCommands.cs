@@ -79,7 +79,7 @@ namespace SolarisBot.Discord.Modules.Owner
             _logger.LogWarning("{intTag} Executing manual RAW run query {query}", GetIntTag(), query);
             var sql = await _databaseContext.Database.ExecuteSqlRawAsync(query);
             _logger.LogWarning("{intTag} Executed manual RAW run query {query}", GetIntTag(), query);
-            await Interaction.ReplyAsync($"Ran raw SQL, {sql} lines affected");
+            await Interaction.ReplyAsync($"Ran raw SQL: {query}\n\n{sql} lines affected");
         }
     }
 }
