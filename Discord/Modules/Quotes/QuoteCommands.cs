@@ -72,7 +72,7 @@ namespace SolarisBot.Discord.Modules.Quotes
         }
 
         [SlashCommand("delete", "Delete a quote by ID")]
-        public async Task DeleteQuoteAsync //todo: zero inclusive?
+        public async Task DeleteQuoteAsync
         (
             [Summary(description: "ID of quote")] string quoteId
         )
@@ -101,7 +101,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             await Interaction.ReplyAsync($"Quote with ID **{parsedQuoteId}** has been deleted");
         }
 
-        [SlashCommand("search", "Search (and view) quotes")] //todo: [REFACTOR] Remove all ULONG params
+        [SlashCommand("search", "Search (and view) quotes")]
         public async Task SearchAsync
         (
             [Summary(description: "[Opt] User that was quoted")] string? authorId = null,

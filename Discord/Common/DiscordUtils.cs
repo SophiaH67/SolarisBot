@@ -101,7 +101,7 @@ namespace SolarisBot.Discord.Common
         #endregion
 
         #region Ids
-        internal static ulong? StringToId(string? idString)
+        internal static ulong? StringToId(string? idString) //todo: [REFACTOR] This needed?
         {
             var success = ulong.TryParse(idString, out var parsedId);
             return success ? parsedId : null;
