@@ -106,8 +106,23 @@ namespace SolarisBot.Discord.Modules.Quotes
         )
         {
             var authorIdParsed = DiscordUtils.StringToId(authorId);
+            if (authorId is not null && authorIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse author ID");
+                return;
+            }
             var creatorIdParsed = DiscordUtils.StringToId(creatorId);
-            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+            if (creatorId is not null && creatorIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse creator ID");
+                return;
+            }
+            var quoteIdParsed = DiscordUtils.StringToIdZeroInclusive(quoteId);
+            if (quoteId is not null && quoteIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse quote ID");
+                return;
+            }
 
             var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, authorId: authorIdParsed, creatorId: creatorIdParsed, quoteId: quoteIdParsed, content: content, offset: offset, limit: showFirst ? 1 : 10);
             if (quotes.Length == 0)
@@ -133,7 +148,17 @@ namespace SolarisBot.Discord.Modules.Quotes
         )
         {
             var authorIdParsed = DiscordUtils.StringToId(authorId);
-            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+            if (authorId is not null && authorIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse author ID");
+                return;
+            }
+            var quoteIdParsed = DiscordUtils.StringToIdZeroInclusive(quoteId);
+            if (quoteId is not null && quoteIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse quote ID");
+                return;
+            }
 
             var quotes = await _dbContext.GetQuotesAsync(0, authorId: authorIdParsed, quoteId: quoteIdParsed, content: content, offset: offset);
             if (quotes.Length == 0)

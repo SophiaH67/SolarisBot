@@ -46,7 +46,17 @@ namespace SolarisBot.Discord.Modules.Quotes
         )
         {
             var authorIdParsed = DiscordUtils.StringToId(authorId);
+            if (authorId is not null && authorIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse author ID");
+                return;
+            }
             var creatorIdParsed = DiscordUtils.StringToId(creatorId);
+            if (creatorId is not null && creatorIdParsed is null)
+            {
+                await Interaction.ReplyErrorAsync("Could not parse creator ID");
+                return;
+            }
 
             var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, authorId: authorIdParsed, creatorId: creatorIdParsed, content: content, offset: offset, limit: limit);
             if (quotes.Length == 0)
