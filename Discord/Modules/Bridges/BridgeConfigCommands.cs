@@ -167,15 +167,10 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "[Opt] Bridge Id")] string? bridgeId = null
         )
         {
-            var parsedBridgeId = DiscordUtils.StringToIdZeroInclusive(bridgeId);
-            if (parsedBridgeId is null)
-            {
-                await Interaction.ReplyInvalidParameterErrorAsync("bridge ID");
-                return;
-            }
+            var parsedBridgeId = DiscordUtils.StringToId(bridgeId);
 
             var query = _dbContext.Bridges.ForGuild(Context.Guild.Id);
-            query = parsedBridgeId == ulong.MinValue
+            query = parsedBridgeId is null
                 ? query.ForChannel(Context.Channel.Id)
                 : query.Where(x => x.BridgeId == parsedBridgeId);
 
