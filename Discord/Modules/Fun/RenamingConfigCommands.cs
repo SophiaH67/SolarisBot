@@ -24,20 +24,33 @@ namespace SolarisBot.Discord.Modules.Fun
         public async Task ConfigureRenameAsync
         (
             [Summary(description: "Is feature enabled?")] bool enabled,
-            [Summary(description: "[Opt] Minimum time between renaming (in sec)"), MinValue(0), MaxValue(2.628e+6)] ulong minTimeout = 1800,
-            [Summary(description: "[Opt] Maximum time between renaming (in sec)"), MinValue(0), MaxValue(2.628e+6)] ulong maxTimeout = 86400
+            [Summary(description: "[Opt] Minimum time between renaming (in sec)")] string minTimeout = "1800",
+            [Summary(description: "[Opt] Maximum time between renaming (in sec)")] string maxTimeout = "86400"
         )
         {
+            var parsedMinTimeout = DiscordUtils.StringToIdZeroInclusive(minTimeout);
+            if (parsedMinTimeout is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("min timeout");
+                return;
+            }
+            var parsedMaxTimeout = DiscordUtils.StringToIdZeroInclusive(maxTimeout);
+            if (parsedMaxTimeout is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("max timeout");
+                return;
+            }
+
             var guild = await _dbContext.GetOrCreateTrackedGuildAsync(Context.Guild.Id);
 
             guild.JokeRenameOn = enabled;
-            guild.JokeRenameTimeoutMax = maxTimeout;
-            guild.JokeRenameTimeoutMin = minTimeout > maxTimeout ? maxTimeout : minTimeout;
+            guild.JokeRenameTimeoutMax = parsedMaxTimeout.Value;
+            guild.JokeRenameTimeoutMin = parsedMinTimeout.Value > parsedMaxTimeout.Value ? parsedMaxTimeout.Value : parsedMinTimeout.Value;
 
-            _logger.LogDebug("{intTag} Setting joke renaming to enabled={role}, mintimeout={minTimeout}, maxtimeout={maxTimeout} in guild {guild}", GetIntTag(), enabled, minTimeout, maxTimeout, Context.Guild.Log());
+            _logger.LogDebug("{intTag} Setting joke renaming to enabled={role}, mintimeout={minTimeout}, maxtimeout={maxTimeout} in guild {guild}", GetIntTag(), enabled, parsedMinTimeout, parsedMaxTimeout.Value, Context.Guild.Log());
             await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("{intTag} Set joke renaming to enabled={role}, mintimeout={minTimeout}, maxtimeout={maxTimeout} in guild {guild}", GetIntTag(), enabled, minTimeout, maxTimeout, Context.Guild.Log());
-            await Interaction.ReplyAsync($"Joke Renaming is currently **{(enabled ? "enabled" : "disabled")}**\n\nTime: **{minTimeout} - {maxTimeout} seconds**");
+            _logger.LogInformation("{intTag} Set joke renaming to enabled={role}, mintimeout={minTimeout}, maxtimeout={maxTimeout} in guild {guild}", GetIntTag(), enabled, parsedMinTimeout, parsedMaxTimeout.Value, Context.Guild.Log());
+            await Interaction.ReplyAsync($"Joke Renaming is currently **{(enabled ? "enabled" : "disabled")}**\n\nTime: **{parsedMinTimeout} - {parsedMaxTimeout.Value} seconds**");
         }
 
         [SlashCommand("reset", "Reset joke rename cooldowns")]
