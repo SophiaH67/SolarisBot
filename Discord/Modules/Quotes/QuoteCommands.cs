@@ -94,18 +94,22 @@ namespace SolarisBot.Discord.Modules.Quotes
             await Interaction.ReplyAsync($"Quote with ID **{id}** has been deleted");
         }
 
-        [SlashCommand("search", "Search (and view) quotes")]
+        [SlashCommand("search", "Search (and view) quotes")] //todo: [REFACTOR] Remove all ULONG params
         public async Task SearchAsync
         (
-            [Summary(description: "[Opt] User that was quoted")] IUser? author = null,
-            [Summary(description: "[Opt] User that created the quote")] IUser? creator = null,
-            [Summary(description: "[Opt] Id of quote")] ulong? id = null,
+            [Summary(description: "[Opt] User that was quoted")] string? authorId = null,
+            [Summary(description: "[Opt] User that created the quote")] string? creatorId = null,
+            [Summary(description: "[Opt] Id of quote")] string? quoteId = null,
             [Summary(description: "[Opt] Text contained in quote")] string? content = null, 
             [Summary(description: "[Opt] Search offset"), MinValue(0)] int offset = 0,
             [Summary(description: "[Opt] Show first result directly?")] bool showFirst = false
         )
         {
-            var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, author: author, creator: creator, id: id, content: content, offset: offset, limit: showFirst ? 1 : 10);
+            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var creatorIdParsed = DiscordUtils.StringToId(creatorId);
+            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+
+            var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, authorId: authorIdParsed, creatorId: creatorIdParsed, quoteId: quoteIdParsed, content: content, offset: offset, limit: showFirst ? 1 : 10);
             if (quotes.Length == 0)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
@@ -122,13 +126,16 @@ namespace SolarisBot.Discord.Modules.Quotes
         [SlashCommand("search-self", "Search through own quotes, not limited by guild")]
         public async Task SearchSelfAsync
         (
-            [Summary(description: "[Opt] User that was quoted")] IUser? author = null,
-            [Summary(description: "[Opt] Id of quote")] ulong? id = null,
+            [Summary(description: "[Opt] User that was quoted")] string? authorId = null,
+            [Summary(description: "[Opt] Id of quote")] string? quoteId = null,
             [Summary(description: "[Opt] Text contained in quote")] string? content = null,
             [Summary(description: "[Opt] Search offset"), MinValue(0)] int offset = 0
         )
         {
-            var quotes = await _dbContext.GetQuotesAsync(0, author: author, id: id, content: content, offset: offset);
+            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+
+            var quotes = await _dbContext.GetQuotesAsync(0, authorId: authorIdParsed, quoteId: quoteIdParsed, content: content, offset: offset);
             if (quotes.Length == 0)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);

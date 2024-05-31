@@ -38,14 +38,17 @@ namespace SolarisBot.Discord.Modules.Quotes
         [SlashCommand("wipe", "Wipe quotes from guild, make sure to search")]
         public async Task WipeQuotesAsync
         (
-            [Summary(description: "[Opt] User that was quoted")] IUser? author = null,
-            [Summary(description: "[Opt] User that created the quote")] IUser? creator = null,
+            [Summary(description: "[Opt] User that was quoted")] string? authorId = null,
+            [Summary(description: "[Opt] User that created the quote")] string? creatorId = null,
             [Summary(description: "[Opt] Text contained in quote")] string? content = null,
             [Summary(description: "[Opt] Search offset"), MinValue(0)] int offset = 0,
             [Summary(description: "[Opt] Search limit"), MinValue(0)] int limit = 0
         )
         {
-            var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, author: author, creator: creator, content: content, offset: offset, limit: limit);
+            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var creatorIdParsed = DiscordUtils.StringToId(creatorId);
+
+            var quotes = await _dbContext.GetQuotesAsync(Context.Guild.Id, authorId: authorIdParsed, creatorId: creatorIdParsed, content: content, offset: offset, limit: limit);
             if (quotes.Length == 0)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);

@@ -6,23 +6,23 @@ namespace SolarisBot.Discord.Modules.Quotes
 {
     internal static class QuoteHelper
     {
-        internal static async Task<DbQuote[]> GetQuotesAsync(this DatabaseContext dbCtx, ulong guild, IUser? author = null, IUser? creator = null, ulong? id = null, string? content = null, int offset = 0, int limit = 0)
+        internal static async Task<DbQuote[]> GetQuotesAsync(this DatabaseContext dbCtx, ulong guild, ulong? authorId = null, ulong? creatorId = null, ulong? quoteId = null, string? content = null, int offset = 0, int limit = 0)
         {
-            if (author is null && creator is null && id is null && content is null && offset != 0)
-                return Array.Empty<DbQuote>();
+            if (authorId is null && creatorId is null && quoteId is null && content is null && offset != 0)
+                return [];
 
             IQueryable<DbQuote> dbQuery = dbCtx.Quotes;
             if (guild != 0)
                 dbQuery = dbQuery.ForGuild(guild);
 
-            if (id is not null)
-                dbQuery = dbQuery.Where(x => x.QuoteId == id);
+            if (quoteId is not null)
+                dbQuery = dbQuery.Where(x => x.QuoteId == quoteId);
             else
             {
-                if (author is not null)
-                    dbQuery = dbQuery.Where(x => x.AuthorId == author.Id);
-                if (creator is not null)
-                    dbQuery = dbQuery.Where(x => x.CreatorId == creator.Id);
+                if (authorId is not null)
+                    dbQuery = dbQuery.Where(x => x.AuthorId == authorId);
+                if (creatorId is not null)
+                    dbQuery = dbQuery.Where(x => x.CreatorId == creatorId);
                 if (content is not null)
                     dbQuery = dbQuery.Where(x => EF.Functions.Like(x.Text, $"%{content}%"));
                 if (offset > 0)
