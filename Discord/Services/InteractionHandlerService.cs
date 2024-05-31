@@ -59,6 +59,7 @@ namespace SolarisBot.Discord.Services
 #pragma warning disable IDE0051 // Remove unused private members
         private async Task RegisterInteractionsToMainAsync()
         {
+            _logger.LogInformation("Ready in DEBUG");
             var guild = _client.GetGuild(_config.MainGuild);
             if (guild != null)
             {
@@ -69,6 +70,7 @@ namespace SolarisBot.Discord.Services
 
         private async Task RegisterInteractionsGloballyAsync()
         {
+            _logger.LogInformation("Ready in RELEASE");
             var guild = _client.GetGuild(_config.MainGuild);
             if (guild is not null)
             {
@@ -118,7 +120,7 @@ namespace SolarisBot.Discord.Services
         {
             if (result.IsSuccess)
             {
-                _logger.LogInformation("Executed interaction \"{interactionModule}\"(Module {module}, Id {interactionId}) for user {user} in channel {channel} of guild {guild}", cmdInfo?.Name ?? "N/A", cmdInfo?.Module.Name ?? "N/A", context.Interaction.Id, context.User.Log(), context.Channel?.Log() ?? "N/A", context.Guild?.Log() ?? "N/A");
+                _logger.LogDebug("Executed interaction \"{interactionModule}\"(Module {module}, Id {interactionId}) for user {user} in channel {channel} of guild {guild}", cmdInfo?.Name ?? "N/A", cmdInfo?.Module.Name ?? "N/A", context.Interaction.Id, context.User.Log(), context.Channel?.Log() ?? "N/A", context.Guild?.Log() ?? "N/A");
                 _stats.IncreaseCommandsExecuted();
                 return;
             }

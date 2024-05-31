@@ -92,18 +92,17 @@ namespace SolarisBot.Discord.Modules.Reminders
         {
             try
             {
-                _logger.LogDebug("Requesting required channel {channel} and user {user} for reminder {reminder}", reminder.ChannelId, reminder.UserId, reminder);
                 var channel = await _client.GetChannelAsync(reminder.ChannelId);
                 if (channel is null || channel is not IMessageChannel msgChannel)
                 {
-                    _logger.LogInformation("Failed to find channel {channel} for reminder {reminder}", reminder.ChannelId, reminder);
+                    _logger.LogDebug("Failed to find channel {channel} for reminder {reminder}", reminder.ChannelId, reminder);
                     return true;
                 }
 
                 var user = await channel.GetUserAsync(reminder.UserId);
                 if (user is null)
                 {
-                    _logger.LogInformation("Failed to find user {user} for reminder {reminder}", reminder.UserId, reminder);
+                    _logger.LogDebug("Failed to find user {user} for reminder {reminder}", reminder.UserId, reminder);
                     return true;
                 }
                 _logger.LogDebug("Received data for channel {channel} and user {user} for reminder {reminder}", msgChannel.Log(), user.Log(), reminder);

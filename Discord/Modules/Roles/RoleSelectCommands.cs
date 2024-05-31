@@ -225,7 +225,7 @@ namespace SolarisBot.Discord.Modules.Roles
                         Name = "Missing Roles",
                         Value = rolesMissingText
                     });
-                    _logger.LogInformation("{intTag} Failed to find roles {missingRoles} guild role list, could not apply to user {userData}", GetIntTag(), rolesMissingText, gUser.Log());
+                    _logger.LogDebug("{intTag} Failed to find roles {missingRoles} guild role list, could not apply to user {userData}", GetIntTag(), rolesMissingText, gUser.Log());
                 }
             }
 
@@ -238,7 +238,7 @@ namespace SolarisBot.Discord.Modules.Roles
                     Name = "Invalid Roles",
                     Value = rolesInvalidText
                 });
-                _logger.LogInformation("{intTag} Failed to find roles {invalidRoles} DB role list, could not apply to user {userData}", GetIntTag(), rolesInvalidText, gUser.Log());
+                _logger.LogDebug("{intTag} Failed to find roles {invalidRoles} DB role list, could not apply to user {userData}", GetIntTag(), rolesInvalidText, gUser.Log());
             }
 
             if (groupFields.Count == 0)
