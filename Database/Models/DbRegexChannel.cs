@@ -22,4 +22,10 @@ namespace SolarisBot.Database
         public override string ToString()
             => $"[{RegexChannelId}]{Regex}(Guild {GuildId}, Channel {ChannelId})";
     }
+
+    internal static class DbRegexChannelExtensions
+    {
+        internal static IQueryable<DbRegexChannel> ForGuild(this IQueryable<DbRegexChannel> query, ulong id)
+            => query.Where(x => x.GuildId == id);
+    }
 }

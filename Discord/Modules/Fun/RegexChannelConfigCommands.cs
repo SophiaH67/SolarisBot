@@ -6,11 +6,12 @@ using Microsoft.Extensions.Logging;
 using SolarisBot.Database;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace SolarisBot.Discord.Modules.Fun
 {
     [Module("fun/regex"), Group("cfg-regex", "[MANAGE CHANNELS ONLY] Bridge config commands")]
-    [RequireContext(ContextType.Guild), DefaultMemberPermissions(GuildPermission.ManageChannels), RequireUserPermission(GuildPermission.ManageChannels)]
+    [RequireContext(ContextType.Guild), DefaultMemberPermissions(GuildPermission.ManageChannels), RequireUserPermission(GuildPermission.ManageChannels)] //todo: [FEATURE] Info commands
     public sealed class RegexChannelConfigCommands : SolarisInteractionModuleBase
     {
         private readonly ILogger<RegexChannelConfigCommands> _logger;
@@ -23,7 +24,7 @@ namespace SolarisBot.Discord.Modules.Fun
 
         //todo: [FEATURE] list, service, cleanup
         [SlashCommand("add", "Add a regex channel")]
-        public async Task ConfigureRegexChannel 
+        public async Task ConfigureRegexChannelAsync 
         (
             [Summary(description: "[Opt] Target channel")] IChannel? channel = null,
             [Summary(description: "[Opt] Regex to enforce (None to disable)")] string regex = "",
@@ -45,7 +46,7 @@ namespace SolarisBot.Discord.Modules.Fun
                 _logger.LogDebug("{intTag} Deleting regex {deleteRegex} for channel {channel} in guild {guild}", GetIntTag(), deleteChannel, thisChannel.Log(), Context.Guild.Log());
                 await _dbContext.SaveChangesAsync();
                 _logger.LogInformation("{intTag} Deleted regex {deleteRegex} for channel {channel} in guild {guild}", GetIntTag(), deleteChannel, thisChannel.Log(), Context.Guild.Log());
-                await Interaction.ReplyAsync($"Deleted RegEx **\"{deleteChannel}\"** for channel **<#{thisChannel.Id}>**");
+                await Interaction.ReplyAsync($"Deleted RegEx **\"{deleteChannel.Regex}\"** with id **{deleteChannel.RegexChannelId}** for channel **<#{thisChannel.Id}>**");
                 return;
             }
 
@@ -73,6 +74,20 @@ namespace SolarisBot.Discord.Modules.Fun
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation("{intTag} Set regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
             await Interaction.ReplyAsync($"RegEx for **<#{dbChannel.ChannelId}>** created\n\nRegex: **{regex}**\nRole: **{(punishmentRole is null ? "None" : $"{punishmentRole.Mention}")}**\nMessage: **{(string.IsNullOrWhiteSpace(dbChannel.PunishmentMessage) ? "None" : $"\"{dbChannel.PunishmentMessage}\"")}**\nDelete: **{(dbChannel.PunishmentDelete ? "Yes" : "No")}**");
+        }
+
+        [SlashCommand("list", "List all regex channels")]
+        public async Task ListRegexChannelsAsync()
+        {
+            var regexChannels = await _dbContext.RegexChannels.ForGuild(Context.Guild.Id).ToArrayAsync();
+            if (regexChannels.Length == 0)
+            {
+                await Interaction.ReplyErrorAsync(GenericError.NoResults);
+                return;
+            }
+
+            var responseText = string.Join("\n", regexChannels.Select(x => $"- {x.RegexChannelId}: {x.Regex} in <#{x.ChannelId}>"));
+            await Interaction.ReplyAsync($"Bridges for this guild", responseText); //tpdo: [REFACTOR] Investigate extra newline?
         }
     }
 }
