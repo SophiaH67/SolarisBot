@@ -31,14 +31,12 @@ namespace SolarisBot.Discord.Services
         #region Start / Stop
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _client.RoleDeleted += OnRoleDeletedHandleAsync;
             _client.UserLeft += OnUserLeftHandleAsync;
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _client.RoleDeleted -= OnRoleDeletedHandleAsync;
             _client.UserLeft -= OnUserLeftHandleAsync;
             return Task.CompletedTask;
         }
@@ -76,42 +74,6 @@ namespace SolarisBot.Discord.Services
 
             _logger.LogDebug("Removing {quotes} related quotes for left user {user} in guild {guild}", quotes.Length, user.Log(), guild.Log());
             dbCtx.Quotes.RemoveRange(quotes);
-            return true;
-        }
-        #endregion
-
-        #region Events - OnRoleDeleted
-        /// <summary>
-        /// Cleans up any role references in DB for deleted role
-        /// </summary>
-        private async Task OnRoleDeletedHandleAsync(SocketRole role)
-        {
-            var dbCtx = _provider.GetRequiredService<DatabaseContext>();
-            
-            var changes = await OnRoleDeletedCleanRoleSettingsAsync(dbCtx, role);
-
-            if (!changes)
-                return;
-
-            _logger.LogDebug("Deleting references to role {role} in DB", role.Log());
-            var (_, err) = await dbCtx.TrySaveChangesAsync();
-            if (err is not null)
-                _logger.LogError(err, "Failed to delete references to role {role} in DB", role.Log());
-            else
-                _logger.LogInformation("Deleted references to role {role} in DB", role.Log());
-        }
-
-        /// <summary>
-        /// Removes RoleSetting if maz
-        /// </summary>
-        private async Task<bool> OnRoleDeletedCleanRoleSettingsAsync(DatabaseContext dbCtx, SocketRole role)
-        {
-            var dbRole = await dbCtx.RoleConfigs.FirstOrDefaultAsync(x => x.RoleId == role.Id);
-            if (dbRole is null)
-                return false;
-
-            _logger.LogDebug("Deleting match {dbRole} for deleted role {role} in DB", dbRole, role.Log());
-            dbCtx.RoleConfigs.Remove(dbRole);
             return true;
         }
         #endregion

@@ -176,18 +176,21 @@ namespace SolarisBot.Discord.Modules.Roles
                 var userRoleIds = gUser.Roles.Select(x => x.Id);
                 var rolesToAdd = new List<DbRoleConfig>();
                 var rolesToRemove = new List<DbRoleConfig>();
+                var rolesMissing = new List<DbRoleConfig>();
 
                 foreach (var roleConfig in roleConfigs)
                 {
-                    if (userRoleIds.Contains(roleConfig.RoleId))
+                    if (!gUser.Guild.Roles.Any(x => x.Id == roleConfig.RoleId))
+                        rolesMissing.Add(roleConfig);
+                    else if (userRoleIds.Contains(roleConfig.RoleId))
                         rolesToRemove.Add(roleConfig);
                     else
                         rolesToAdd.Add(roleConfig);
                 }
 
-                if (rolesToAdd.Any()) //todo: [FEATURE] implement validity checks
+                if (rolesToAdd.Count != 0) //todo: [FEATURE] implement validity checks
                 {
-                    var rolesToAddText = string.Join(", ", rolesToAdd.Select(x => $"{x.Identifier}(<@&{x.RoleId}>)"));
+                    var rolesToAddText = GenerateRoleList(rolesToAdd);
                     _logger.LogDebug("{intTag} Adding roles {addedRoles} to user {userData} in guild {guild}", GetIntTag(), rolesToAddText, gUser.Log(), Context.Guild.Log());
                     await gUser.AddRolesAsync(rolesToAdd.Select(x => x.RoleId));
                     groupFields.Add(new EmbedFieldBuilder()
@@ -198,9 +201,10 @@ namespace SolarisBot.Discord.Modules.Roles
                     });
                     _logger.LogInformation("{intTag} Added roles {addedRoles} to user {userData} in guild {guild}", GetIntTag(), rolesToAddText, gUser.Log(), Context.Guild.Log());
                 }
+
                 if (rolesToRemove.Count != 0)
                 {
-                    var rolesToRemoveText = string.Join(", ", rolesToRemove.Select(x => $"{x.Identifier}(<@&{x.RoleId}>)"));
+                    var rolesToRemoveText = GenerateRoleList(rolesToRemove);
                     _logger.LogDebug("{intTag} Removing roles {removedRoles} from user {userData} in guild {guild}", GetIntTag(), rolesToRemoveText, gUser.Log(), Context.Guild.Log());
                     await gUser.RemoveRolesAsync(rolesToRemove.Select(x => x.RoleId));
                     groupFields.Add(new EmbedFieldBuilder()
@@ -210,6 +214,18 @@ namespace SolarisBot.Discord.Modules.Roles
                         Value = rolesToRemoveText
                     });
                     _logger.LogInformation("{intTag} Removed roles {removedRoles} from user {userData} in guild {guild}", GetIntTag(), rolesToRemoveText, gUser.Log(), Context.Guild.Log());
+                }
+
+                if (rolesMissing.Count != 0)
+                {
+                    var rolesMissingText = GenerateRoleList(rolesMissing);
+                    groupFields.Add(new EmbedFieldBuilder()
+                    {
+                        IsInline = true,
+                        Name = "Missing Roles",
+                        Value = rolesMissingText
+                    });
+                    _logger.LogInformation("{intTag} Failed to find roles {missingRoles} guild role list, could not apply to user {userData}", GetIntTag(), rolesMissingText, gUser.Log());
                 }
             }
 
@@ -222,7 +238,7 @@ namespace SolarisBot.Discord.Modules.Roles
                     Name = "Invalid Roles",
                     Value = rolesInvalidText
                 });
-                _logger.LogWarning("{intTag} Failed to find roles {invalidRoles} role list, could not apply to user {userData}", GetIntTag(), rolesInvalidText, gUser.Log());
+                _logger.LogInformation("{intTag} Failed to find roles {invalidRoles} DB role list, could not apply to user {userData}", GetIntTag(), rolesInvalidText, gUser.Log());
             }
 
             if (groupFields.Count == 0)
@@ -234,5 +250,8 @@ namespace SolarisBot.Discord.Modules.Roles
 
             return embedBuilder.Build();
         }
+
+        private static string GenerateRoleList(IEnumerable<DbRoleConfig> roleConfigs)
+            => string.Join(", ", roleConfigs.Select(x => $"{x.Identifier}(<@&{x.RoleId}>)"));
     }
 }
