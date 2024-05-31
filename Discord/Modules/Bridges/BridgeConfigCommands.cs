@@ -177,18 +177,18 @@ namespace SolarisBot.Discord.Modules.Bridges
                 ? query.ForChannel(Context.Channel.Id)
                 : query.Where(x => x.BridgeId == parsedBridgeId);
 
-            var bridges = await query.ToListAsync();
-            if (bridges.Count == 0)
+            var bridges = await query.ToArrayAsync();
+            if (bridges.Length == 0)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
                 return;
             }
 
             _dbContext.Bridges.RemoveRange(bridges);
-            _logger.LogDebug("{intTag} Removing {bridgeCount} bridges in guild {guild}", GetIntTag(), bridges.Count, Context.Guild.Log());
+            _logger.LogDebug("{intTag} Removing {bridgeCount} bridges in guild {guild}", GetIntTag(), bridges.Length, Context.Guild.Log());
             await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("{intTag} Removed {bridgeCount} bridges in guild {guild}", GetIntTag(), bridges.Count, Context.Guild.Log());
-            await Interaction.ReplyAsync($"Removed **{bridges.Count}** bridge{(bridges.Count == 0 ? string.Empty : "s")}");
+            _logger.LogInformation("{intTag} Removed {bridgeCount} bridges in guild {guild}", GetIntTag(), bridges.Length, Context.Guild.Log());
+            await Interaction.ReplyAsync($"Removed **{bridges.Length}** bridge{(bridges.Length == 1 ? string.Empty : "s")}");
 
             foreach (var bridge in bridges)
             {

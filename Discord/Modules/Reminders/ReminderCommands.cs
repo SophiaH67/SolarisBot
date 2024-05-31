@@ -48,8 +48,8 @@ namespace SolarisBot.Discord.Modules.Reminders
                 return;
             }
 
-            var userReminders = await _dbContext.Reminders.ForUser(Context.User.Id).ToListAsync();
-            if (userReminders.Count >= _botConfig.MaxRemindersPerUser)
+            var userReminders = await _dbContext.Reminders.ForUser(Context.User.Id).ToArrayAsync();
+            if (userReminders.Length >= _botConfig.MaxRemindersPerUser)
             {
                 await Interaction.ReplyErrorAsync($"Reached maximum reminder count of **{_botConfig.MaxRemindersPerUser}**");
                 return;
