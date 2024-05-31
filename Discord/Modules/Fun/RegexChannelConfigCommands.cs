@@ -10,7 +10,7 @@ using System;
 
 namespace SolarisBot.Discord.Modules.Fun
 {
-    [Module("fun/regex"), Group("cfg-regex", "[MANAGE CHANNELS ONLY] Bridge config commands")]
+    [Module("fun/regex"), Group("cfg-regex", "[MANAGE CHANNELS ONLY] RegEx channel config commands")]
     [RequireContext(ContextType.Guild), DefaultMemberPermissions(GuildPermission.ManageChannels), RequireUserPermission(GuildPermission.ManageChannels)] //todo: [FEATURE] Info commands
     public sealed class RegexChannelConfigCommands : SolarisInteractionModuleBase
     {
@@ -27,7 +27,7 @@ namespace SolarisBot.Discord.Modules.Fun
         public async Task ConfigureRegexChannelAsync 
         (
             [Summary(description: "[Opt] Target channel")] IChannel? channel = null,
-            [Summary(description: "[Opt] Regex to enforce (None to disable)")] string regex = "",
+            [Summary(description: "[Opt] RegEx to enforce (None to disable)")] string regex = "",
             [Summary(description: "[Opt] Role to apply as punishment")] IRole? punishmentRole = null,
             [Summary(description: "[Opt] Message to send on fail")] string punishmentMsg = "",
             [Summary(description: "[Opt] Delete fail message")] bool deleteMsg = false
@@ -87,7 +87,7 @@ namespace SolarisBot.Discord.Modules.Fun
             }
 
             var responseText = string.Join("\n", regexChannels.Select(x => $"- {x.RegexChannelId}: {x.Regex} in <#{x.ChannelId}>"));
-            await Interaction.ReplyAsync($"Bridges for this guild", responseText); //tpdo: [REFACTOR] Investigate extra newline?
+            await Interaction.ReplyAsync($"RegEx channels for this guild", responseText); //tpdo: [REFACTOR] Investigate extra newline?
         }
 
         [SlashCommand("remove", "Remove RegEx channels")]
