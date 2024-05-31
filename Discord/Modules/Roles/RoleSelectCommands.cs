@@ -36,7 +36,7 @@ namespace SolarisBot.Discord.Modules.Roles
             foreach (var roleGroup in roleGroups.OrderBy(x => x.Identifier))
             {
                 var roles = roleGroup.RoleConfigs;
-                if (!roles.Any()) continue;
+                if (roles.Count == 0) continue;
 
 
                 var featuresList = new List<string>();
@@ -48,7 +48,7 @@ namespace SolarisBot.Discord.Modules.Roles
                 var valueTextBuilder = new StringBuilder();
                 if (!string.IsNullOrWhiteSpace(roleGroup.Description))
                     valueTextBuilder.Append(roleGroup.Description);
-                if (featuresList.Any())
+                if (featuresList.Count != 0)
                 {
                     if (valueTextBuilder.Length != 0)
                         valueTextBuilder.Append(" - ");
@@ -66,7 +66,7 @@ namespace SolarisBot.Discord.Modules.Roles
                 groupFields.Add(fieldBuilder);
             }
 
-            if (!groupFields.Any())
+            if (groupFields.Count == 0)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
                 return;
@@ -198,7 +198,7 @@ namespace SolarisBot.Discord.Modules.Roles
                     });
                     _logger.LogInformation("{intTag} Added roles {addedRoles} to user {userData} in guild {guild}", GetIntTag(), rolesToAddText, gUser.Log(), Context.Guild.Log());
                 }
-                if (rolesToRemove.Any())
+                if (rolesToRemove.Count != 0)
                 {
                     var rolesToRemoveText = string.Join(", ", rolesToRemove.Select(x => $"{x.Identifier}(<@&{x.RoleId}>)"));
                     _logger.LogDebug("{intTag} Removing roles {removedRoles} from user {userData} in guild {guild}", GetIntTag(), rolesToRemoveText, gUser.Log(), Context.Guild.Log());
@@ -225,7 +225,7 @@ namespace SolarisBot.Discord.Modules.Roles
                 _logger.LogWarning("{intTag} Failed to find roles {invalidRoles} role list, could not apply to user {userData}", GetIntTag(), rolesInvalidText, gUser.Log());
             }
 
-            if (!groupFields.Any())
+            if (groupFields.Count == 0)
                 return EmbedFactory.Error(GenericError.NoResults);
 
             var embedBuilder = EmbedFactory.Builder()
