@@ -27,5 +27,8 @@ namespace SolarisBot.Database
     {
         internal static IQueryable<DbRegexChannel> ForGuild(this IQueryable<DbRegexChannel> query, ulong id)
             => query.Where(x => x.GuildId == id);
+
+        internal static IQueryable<DbRegexChannel> ForChannel(this IQueryable<DbRegexChannel> query, ulong id)
+            => query.Where(x => x.ChannelId == id);
     }
 }

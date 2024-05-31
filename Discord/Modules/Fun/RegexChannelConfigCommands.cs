@@ -22,7 +22,7 @@ namespace SolarisBot.Discord.Modules.Fun
             _logger = logger;
         }
 
-        //todo: [FEATURE] list, service, cleanup
+        //todo: [FEATURE] service
         [SlashCommand("add", "Add a RegEx channel")]
         public async Task ConfigureRegexChannelAsync 
         (
@@ -46,7 +46,7 @@ namespace SolarisBot.Discord.Modules.Fun
                 _logger.LogDebug("{intTag} Deleting regex {deleteRegex} for channel {channel} in guild {guild}", GetIntTag(), deleteChannel, thisChannel.Log(), Context.Guild.Log());
                 await _dbContext.SaveChangesAsync();
                 _logger.LogInformation("{intTag} Deleted regex {deleteRegex} for channel {channel} in guild {guild}", GetIntTag(), deleteChannel, thisChannel.Log(), Context.Guild.Log());
-                await Interaction.ReplyAsync($"Deleted RegEx **\"{deleteChannel.Regex}\"** with id **{deleteChannel.RegexChannelId}** for channel **<#{thisChannel.Id}>**");
+                await Interaction.ReplyAsync($"Removed RegEx channel **\"{deleteChannel.Regex}\"** with id **{deleteChannel.RegexChannelId}** for channel **<#{thisChannel.Id}>**");
                 return;
             }
 
@@ -88,6 +88,39 @@ namespace SolarisBot.Discord.Modules.Fun
 
             var responseText = string.Join("\n", regexChannels.Select(x => $"- {x.RegexChannelId}: {x.Regex} in <#{x.ChannelId}>"));
             await Interaction.ReplyAsync($"Bridges for this guild", responseText); //tpdo: [REFACTOR] Investigate extra newline?
+        }
+
+        [SlashCommand("remove", "Remove RegEx channels")]
+        //todo: [FEATURE] Channel ID option to avoid leftovers
+        public async Task DeleteRegexChannelsAsync
+        (
+            [Summary(description: "[Opt] Id to delete")] string? targetId = null
+        )
+        {
+            var parsedTargetId = Utils.ToUlongOrNull(targetId);
+            if (targetId is not null && parsedTargetId is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("target ID");
+                return;
+            }
+
+            var query = _dbContext.RegexChannels.ForGuild(Context.Guild.Id);
+            query = parsedTargetId is null
+                ? query.ForChannel(Context.Channel.Id)
+                : query.Where(x => x.RegexChannelId == parsedTargetId);
+
+            var regexChannels = await query.ToArrayAsync();
+            if (regexChannels.Length == 0)
+            {
+                await Interaction.ReplyErrorAsync(GenericError.NoResults);
+                return;
+            }
+
+            _dbContext.RegexChannels.RemoveRange(regexChannels);
+            _logger.LogDebug("{intTag} Removing {channelCount} regex channels in guild {guild}", GetIntTag(), regexChannels.Length, Context.Guild.Log());
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation("{intTag} Removed {channelCount} regex channels in guild {guild}", GetIntTag(), regexChannels.Length, Context.Guild.Log());
+            await Interaction.ReplyAsync($"Removed **{regexChannels.Length}** RegEx channel{(regexChannels.Length == 1 ? string.Empty : "s")}");
         }
     }
 }
