@@ -45,13 +45,13 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "[Opt] Search limit"), MinValue(0)] int limit = 0
         )
         {
-            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var authorIdParsed = DiscordUtils.StringToIdZeroInclusive(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
-            var creatorIdParsed = DiscordUtils.StringToId(creatorId);
+            var creatorIdParsed = DiscordUtils.StringToIdZeroInclusive(creatorId);
             if (creatorId is not null && creatorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("creator Id");

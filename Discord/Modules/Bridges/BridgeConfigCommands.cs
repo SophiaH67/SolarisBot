@@ -167,7 +167,7 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "[Opt] Bridge Id")] string? bridgeId = null
         )
         {
-            var parsedBridgeId = DiscordUtils.StringToId(bridgeId);
+            var parsedBridgeId = DiscordUtils.StringToIdZeroInclusive(bridgeId);
 
             var query = _dbContext.Bridges.ForGuild(Context.Guild.Id);
             query = parsedBridgeId is null
