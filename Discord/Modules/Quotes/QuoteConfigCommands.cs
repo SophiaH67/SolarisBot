@@ -48,13 +48,13 @@ namespace SolarisBot.Discord.Modules.Quotes
             var authorIdParsed = DiscordUtils.StringToId(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
-                await Interaction.ReplyErrorAsync("Could not parse author ID");
+                await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
             var creatorIdParsed = DiscordUtils.StringToId(creatorId);
             if (creatorId is not null && creatorIdParsed is null)
             {
-                await Interaction.ReplyErrorAsync("Could not parse creator ID");
+                await Interaction.ReplyInvalidParameterErrorAsync("creator Id");
                 return;
             }
 
