@@ -74,13 +74,20 @@ namespace SolarisBot.Discord.Modules.Quotes
         [SlashCommand("delete", "Delete a quote by ID")]
         public async Task DeleteQuoteAsync
         (
-            [Summary(description: "ID of quote")] ulong id
+            [Summary(description: "ID of quote")] string quoteId
         )
         {
+            var parsedQuoteId = DiscordUtils.StringToId(quoteId);
+            if (parsedQuoteId is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("quote Id");
+                return;
+            }
+
             var user = GetGuildUser(Context.User);
             bool isAdmin = user?.GuildPermissions.ManageMessages ?? false;
 
-            var dbQuote = await _dbContext.Quotes.FirstOrDefaultAsync(x => x.QuoteId == id && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
+            var dbQuote = await _dbContext.Quotes.FirstOrDefaultAsync(x => x.QuoteId == parsedQuoteId.Value && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
             if (dbQuote is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
@@ -91,7 +98,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             _dbContext.Quotes.Remove(dbQuote);
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation("{intTag} Removed quote {quote} from guild {guild}", GetIntTag(), dbQuote, Context.Guild.Id);
-            await Interaction.ReplyAsync($"Quote with ID **{id}** has been deleted");
+            await Interaction.ReplyAsync($"Quote with ID **{parsedQuoteId}** has been deleted");
         }
 
         [SlashCommand("search", "Search (and view) quotes")] //todo: [REFACTOR] Remove all ULONG params
