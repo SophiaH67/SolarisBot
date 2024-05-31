@@ -160,7 +160,7 @@ namespace SolarisBot.Discord.Modules.Bridges
         }
 
         [SlashCommand("remove", "Remove bridges from channel")]
-        public async Task RemoveBridgeAsync
+        public async Task RemoveBridgeAsync //todo: [FEATURE] Channel ID option to avoid leftovers
         (
             [Summary(description: "[Opt] Bridge Id")] string? bridgeId = null
         )

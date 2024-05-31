@@ -23,7 +23,7 @@ namespace SolarisBot.Discord.Modules.Fun
         }
 
         //todo: [FEATURE] list, service, cleanup
-        [SlashCommand("add", "Add a regex channel")]
+        [SlashCommand("add", "Add a RegEx channel")]
         public async Task ConfigureRegexChannelAsync 
         (
             [Summary(description: "[Opt] Target channel")] IChannel? channel = null,
@@ -76,7 +76,7 @@ namespace SolarisBot.Discord.Modules.Fun
             await Interaction.ReplyAsync($"RegEx for **<#{dbChannel.ChannelId}>** created\n\nRegex: **{regex}**\nRole: **{(punishmentRole is null ? "None" : $"{punishmentRole.Mention}")}**\nMessage: **{(string.IsNullOrWhiteSpace(dbChannel.PunishmentMessage) ? "None" : $"\"{dbChannel.PunishmentMessage}\"")}**\nDelete: **{(dbChannel.PunishmentDelete ? "Yes" : "No")}**");
         }
 
-        [SlashCommand("list", "List all regex channels")]
+        [SlashCommand("list", "List all RegEx channels")]
         public async Task ListRegexChannelsAsync()
         {
             var regexChannels = await _dbContext.RegexChannels.ForGuild(Context.Guild.Id).ToArrayAsync();
