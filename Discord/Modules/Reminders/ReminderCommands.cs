@@ -124,12 +124,19 @@ namespace SolarisBot.Discord.Modules.Reminders
         }
 
         [SlashCommand("delete", "Delete a reminder")]
-        public async Task DeleteReminder
+        public async Task DeleteReminderAsync
         (
-            [Summary(description: "Id of reminder")] ulong id
+            [Summary(description: "Id of reminder")] string reminderId
         )
         {
-            var reminder = await _dbContext.Reminders.ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == id);
+            var parsedReminderId = DiscordUtils.StringToIdZeroInclusive(reminderId);
+            if (parsedReminderId is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("reminder ID");
+                return;
+            }
+
+            var reminder = await _dbContext.Reminders.ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == parsedReminderId.Value);
             if (reminder is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
