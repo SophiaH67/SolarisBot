@@ -79,7 +79,7 @@ namespace SolarisBot.Discord.Modules.Quotes
         {
             if (!ulong.TryParse(quoteId, out var parsedQuoteId))
             {
-                await Interaction.ReplyInvalidParameterErrorAsync("quote Id");
+                await Interaction.ReplyInvalidParameterErrorAsync("quote ID");
                 return;
             }
 

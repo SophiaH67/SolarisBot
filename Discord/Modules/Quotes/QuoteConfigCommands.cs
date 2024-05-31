@@ -54,7 +54,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             var creatorIdParsed = Utils.ToUlongOrNull(creatorId);
             if (creatorId is not null && creatorIdParsed is null)
             {
-                await Interaction.ReplyInvalidParameterErrorAsync("creator Id");
+                await Interaction.ReplyInvalidParameterErrorAsync("creator ID");
                 return;
             }
 
