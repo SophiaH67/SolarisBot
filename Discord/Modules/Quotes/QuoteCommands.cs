@@ -77,8 +77,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "ID of quote")] string quoteId
         )
         {
-            var parsedQuoteId = DiscordUtils.StringToId(quoteId);
-            if (parsedQuoteId is null)
+            if (!ulong.TryParse(quoteId, out var parsedQuoteId))
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote Id");
                 return;
@@ -87,7 +86,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             var user = GetGuildUser(Context.User);
             bool isAdmin = user?.GuildPermissions.ManageMessages ?? false;
 
-            var dbQuote = await _dbContext.Quotes.FirstOrDefaultAsync(x => x.QuoteId == parsedQuoteId.Value && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
+            var dbQuote = await _dbContext.Quotes.FirstOrDefaultAsync(x => x.QuoteId == parsedQuoteId && (x.AuthorId == Context.User.Id || x.CreatorId == Context.User.Id || isAdmin && Context.Guild.Id == x.GuildId));
             if (dbQuote is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
@@ -112,19 +111,19 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "[Opt] Show first result directly?")] bool showFirst = false
         )
         {
-            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var authorIdParsed = Utils.ToUlongOrNull(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
-            var creatorIdParsed = DiscordUtils.StringToId(creatorId);
+            var creatorIdParsed = Utils.ToUlongOrNull(creatorId);
             if (creatorId is not null && creatorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("creator ID");
                 return;
             }
-            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+            var quoteIdParsed = Utils.ToUlongOrNull(quoteId);
             if (quoteId is not null && quoteIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote ID");
@@ -154,13 +153,13 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "[Opt] Search offset"), MinValue(0)] int offset = 0
         )
         {
-            var authorIdParsed = DiscordUtils.StringToId(authorId);
+            var authorIdParsed = Utils.ToUlongOrNull(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
-            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
+            var quoteIdParsed = Utils.ToUlongOrNull(quoteId);
             if (quoteId is not null && quoteIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote ID");

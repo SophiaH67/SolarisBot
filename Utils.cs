@@ -32,5 +32,16 @@ namespace SolarisBot
         /// Faker to generate random values
         /// </summary>
         internal static Faker Faker { get; private set; } = new Faker();
+
+        /// <summary>
+        /// Converts a string into a Ulong
+        /// </summary>
+        /// <param name="text">Ulong to convert</param>
+        /// <returns>Ulong if parsed, otherwise null</returns>
+        internal static ulong? ToUlongOrNull(string? text)
+        {
+            var success = ulong.TryParse(text, out var parsedId);
+            return success ? parsedId : null;
+        }
     }
 }

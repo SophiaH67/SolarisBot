@@ -56,14 +56,12 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "Id of target channel")] string channelId
         )
         {
-            var parsedGuildId = DiscordUtils.StringToId(guildId);
-            if (parsedGuildId is null || parsedGuildId > 0)
+            if (!ulong.TryParse(guildId, out var parsedGuildId) || parsedGuildId == 0)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("guild ID");
                 return;
             }
-            var parsedChannelId = DiscordUtils.StringToId(channelId);
-            if (parsedChannelId is null || parsedChannelId > 0)
+            if (!ulong.TryParse(channelId, out var parsedChannelId) || parsedChannelId == 0)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("channel ID");
                 return;
@@ -92,28 +90,28 @@ namespace SolarisBot.Discord.Modules.Bridges
                 return;
             }
 
-            var bridgesThere = await _dbContext.Bridges.ForGuild(parsedChannelId.Value).CountAsync();
+            var bridgesThere = await _dbContext.Bridges.ForGuild(parsedChannelId).CountAsync();
             if (bridgesThere > _config.MaxBridgesPerGuild)
             {
                 await Interaction.ReplyErrorAsync($"Target guild already has the maximum amount of bridges ({_config.MaxBridgesPerGuild})");
                 return;
             }
 
-            var duplicate = await _dbContext.Bridges.ForGuild(parsedGuildId.Value).ForGuild(Context.Guild.Id).FirstOrDefaultAsync();
+            var duplicate = await _dbContext.Bridges.ForGuild(parsedGuildId).ForGuild(Context.Guild.Id).FirstOrDefaultAsync();
             if (duplicate is not null)
             {
                 await Interaction.ReplyErrorAsync("This bridge already exists");
                 return;
             }
 
-            var otherGuild = await Context.Client.GetGuildAsync(parsedGuildId.Value);
+            var otherGuild = await Context.Client.GetGuildAsync(parsedGuildId);
             if (otherGuild is null)
             {
                 await Interaction.ReplyErrorAsync($"Guild with Id {parsedGuildId} could not be found by bot");
                 return;
             }
 
-            var otherChannel = await otherGuild.GetChannelAsync(parsedChannelId.Value);
+            var otherChannel = await otherGuild.GetChannelAsync(parsedChannelId);
             if (otherChannel is null)
             {
                 await Interaction.ReplyErrorAsync($"Channel with Id {parsedChannelId} could not be found in guild by bot");
@@ -167,7 +165,12 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "[Opt] Bridge Id")] string? bridgeId = null
         )
         {
-            var parsedBridgeId = DiscordUtils.StringToId(bridgeId);
+            var parsedBridgeId = Utils.ToUlongOrNull(bridgeId);
+            if (bridgeId is not null && parsedBridgeId is null)
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("bridge ID");
+                return;
+            }
 
             var query = _dbContext.Bridges.ForGuild(Context.Guild.Id);
             query = parsedBridgeId is null

@@ -99,13 +99,5 @@ namespace SolarisBot.Discord.Common
         internal static IRole? FindRole(this IGuild guild, ulong id)
             => guild.Roles.FirstOrDefault(x => x.Id == id);
         #endregion
-
-        #region Ids
-        internal static ulong? StringToId(string? idString) //todo: [REFACTOR] This needed?
-        {
-            var success = ulong.TryParse(idString, out var parsedId);
-            return success ? parsedId : null;
-        }
-        #endregion
     }
 }

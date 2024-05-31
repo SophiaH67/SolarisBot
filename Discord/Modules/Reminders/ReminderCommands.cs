@@ -129,14 +129,13 @@ namespace SolarisBot.Discord.Modules.Reminders
             [Summary(description: "Id of reminder")] string reminderId
         )
         {
-            var parsedReminderId = DiscordUtils.StringToId(reminderId);
-            if (parsedReminderId is null)
+            if (!ulong.TryParse(reminderId, out var parsedReminderId))
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("reminder ID");
                 return;
             }
 
-            var reminder = await _dbContext.Reminders.ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == parsedReminderId.Value);
+            var reminder = await _dbContext.Reminders.ForUser(Context.User.Id).FirstOrDefaultAsync(x => x.ReminderId == parsedReminderId);
             if (reminder is null)
             {
                 await Interaction.ReplyErrorAsync(GenericError.NoResults);
