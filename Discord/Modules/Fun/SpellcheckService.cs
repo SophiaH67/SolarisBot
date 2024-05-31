@@ -53,7 +53,7 @@ namespace SolarisBot.Discord.Modules.Fun
         /// <summary>
         /// Annoys user for spelling mistakes lol
         /// </summary>
-        private async Task CheckForSpellErrorsAsync(SocketMessage message)
+        private async Task CheckForSpellErrorsAsync(SocketMessage message) //todo: [FEATURE] On edit?
         {
             if (message is not IUserMessage userMessage || message.Author.IsWebhook || message.Author.IsBot || message.Author is not IGuildUser gUser)
                 return;
