@@ -129,7 +129,7 @@ namespace SolarisBot.Discord.Modules.Reminders
             [Summary(description: "Id of reminder")] string reminderId
         )
         {
-            var parsedReminderId = DiscordUtils.StringToIdZeroInclusive(reminderId);
+            var parsedReminderId = DiscordUtils.StringToId(reminderId);
             if (parsedReminderId is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("reminder ID");

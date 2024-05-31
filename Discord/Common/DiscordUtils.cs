@@ -101,17 +101,10 @@ namespace SolarisBot.Discord.Common
         #endregion
 
         #region Ids
-
-        internal static ulong? StringToIdZeroInclusive(string? idString)
+        internal static ulong? StringToId(string? idString)
         {
             var success = ulong.TryParse(idString, out var parsedId);
             return success ? parsedId : null;
-        }
-
-        internal static ulong? StringToId(string? idString) //todo: [REFACTOR] impl in other spaces
-        {
-            var parsed = StringToIdZeroInclusive(idString);
-            return parsed is null || parsed == 0 ? null : parsed;
         }
         #endregion
     }

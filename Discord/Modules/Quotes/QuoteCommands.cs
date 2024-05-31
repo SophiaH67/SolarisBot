@@ -77,7 +77,7 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "ID of quote")] string quoteId
         )
         {
-            var parsedQuoteId = DiscordUtils.StringToIdZeroInclusive(quoteId);
+            var parsedQuoteId = DiscordUtils.StringToId(quoteId);
             if (parsedQuoteId is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote Id");
@@ -112,19 +112,19 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "[Opt] Show first result directly?")] bool showFirst = false
         )
         {
-            var authorIdParsed = DiscordUtils.StringToIdZeroInclusive(authorId);
+            var authorIdParsed = DiscordUtils.StringToId(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
-            var creatorIdParsed = DiscordUtils.StringToIdZeroInclusive(creatorId);
+            var creatorIdParsed = DiscordUtils.StringToId(creatorId);
             if (creatorId is not null && creatorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("creator ID");
                 return;
             }
-            var quoteIdParsed = DiscordUtils.StringToIdZeroInclusive(quoteId);
+            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
             if (quoteId is not null && quoteIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote ID");
@@ -154,13 +154,13 @@ namespace SolarisBot.Discord.Modules.Quotes
             [Summary(description: "[Opt] Search offset"), MinValue(0)] int offset = 0
         )
         {
-            var authorIdParsed = DiscordUtils.StringToIdZeroInclusive(authorId);
+            var authorIdParsed = DiscordUtils.StringToId(authorId);
             if (authorId is not null && authorIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("author ID");
                 return;
             }
-            var quoteIdParsed = DiscordUtils.StringToIdZeroInclusive(quoteId);
+            var quoteIdParsed = DiscordUtils.StringToId(quoteId);
             if (quoteId is not null && quoteIdParsed is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("quote ID");

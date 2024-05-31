@@ -28,13 +28,13 @@ namespace SolarisBot.Discord.Modules.Fun
             [Summary(description: "[Opt] Maximum time between renaming (in sec)")] string maxTimeout = "86400"
         )
         {
-            var parsedMinTimeout = DiscordUtils.StringToIdZeroInclusive(minTimeout);
+            var parsedMinTimeout = DiscordUtils.StringToId(minTimeout);
             if (parsedMinTimeout is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("min timeout");
                 return;
             }
-            var parsedMaxTimeout = DiscordUtils.StringToIdZeroInclusive(maxTimeout);
+            var parsedMaxTimeout = DiscordUtils.StringToId(maxTimeout);
             if (parsedMaxTimeout is null)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("max timeout");

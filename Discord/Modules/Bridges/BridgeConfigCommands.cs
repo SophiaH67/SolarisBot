@@ -57,13 +57,13 @@ namespace SolarisBot.Discord.Modules.Bridges
         )
         {
             var parsedGuildId = DiscordUtils.StringToId(guildId);
-            if (parsedGuildId is null)
+            if (parsedGuildId is null || parsedGuildId > 0)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("guild ID");
                 return;
             }
             var parsedChannelId = DiscordUtils.StringToId(channelId);
-            if (parsedChannelId is null)
+            if (parsedChannelId is null || parsedChannelId > 0)
             {
                 await Interaction.ReplyInvalidParameterErrorAsync("channel ID");
                 return;
@@ -167,7 +167,7 @@ namespace SolarisBot.Discord.Modules.Bridges
             [Summary(description: "[Opt] Bridge Id")] string? bridgeId = null
         )
         {
-            var parsedBridgeId = DiscordUtils.StringToIdZeroInclusive(bridgeId);
+            var parsedBridgeId = DiscordUtils.StringToId(bridgeId);
 
             var query = _dbContext.Bridges.ForGuild(Context.Guild.Id);
             query = parsedBridgeId is null
