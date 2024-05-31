@@ -44,7 +44,7 @@ namespace SolarisBot.Discord.Modules.Bridges
                 return;
             }
 
-            string bridgeText = string.Join("\n", bridges.Select(x => $"- {x.BridgeId}: {x.Name} {(Context.Channel.Id == x.ChannelAId ? x.ChannelBId : x.ChannelAId)} in {(Context.Guild.Id == x.GuildAId ? x.GuildBId : x.GuildAId)}"));
+            string bridgeText = string.Join("\n", bridges.Select(x => $"- {x.BridgeId}: {x.Name} <#{(Context.Channel.Id == x.ChannelAId ? x.ChannelBId : x.ChannelAId)}> in {(Context.Guild.Id == x.GuildAId ? x.GuildBId : x.GuildAId)}"));
             await Interaction.ReplyAsync($"Bridges for this {(guild ? "Guild" : "Channel")}", bridgeText);
         }
 
