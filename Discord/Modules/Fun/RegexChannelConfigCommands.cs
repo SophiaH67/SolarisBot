@@ -78,10 +78,10 @@ namespace SolarisBot.Discord.Modules.Fun
             dbChannel.PunishmentTimeout = parsedPunishmentTimeout;
 
             _dbContext.RegexChannels.Update(dbChannel);
-            _logger.LogDebug("{intTag} Setting regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
+            _logger.LogDebug("{intTag} Setting regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete}, timeout={timeout} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.PunishmentTimeout, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
             await _dbContext.SaveChangesAsync();
-            _logger.LogInformation("{intTag} Set regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
-            await Interaction.ReplyAsync($"RegEx for **<#{dbChannel.ChannelId}>** created\n\nRegex: **{regex}**\nRole: **{(punishmentRole is null ? "None" : $"{punishmentRole.Mention}")}**\nMessage: **{(string.IsNullOrWhiteSpace(dbChannel.PunishmentMessage) ? "None" : $"\"{dbChannel.PunishmentMessage}\"")}**\nDelete: **{(dbChannel.PunishmentDelete ? "Yes" : "No")}**");
+            _logger.LogInformation("{intTag} Set regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete}, timeout={timeout} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.PunishmentTimeout, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
+            await Interaction.ReplyAsync($"RegEx for **<#{dbChannel.ChannelId}>** created\n\nRegex: **{regex}**\nRole: **{(punishmentRole is null ? "None" : $"{punishmentRole.Mention}")}**\nMessage: **{(string.IsNullOrWhiteSpace(dbChannel.PunishmentMessage) ? "None" : $"\"{dbChannel.PunishmentMessage}\"")}**\nTimeout: **{dbChannel.PunishmentTimeout}**\nDelete: **{(dbChannel.PunishmentDelete ? "Yes" : "No")}**");
         }
 
         [SlashCommand("list", "List all RegEx channels")]
