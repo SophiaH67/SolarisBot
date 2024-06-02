@@ -30,9 +30,16 @@ namespace SolarisBot.Discord.Modules.Fun
             [Summary(description: "[Opt] RegEx to enforce (None to disable)")] string regex = "",
             [Summary(description: "[Opt] Role to apply as punishment")] IRole? punishmentRole = null,
             [Summary(description: "[Opt] Message to send on fail")] string punishmentMsg = "",
+            [Summary(description: "[Opt] Timeout duration on fail")] string punishmentTimeout = "0",
             [Summary(description: "[Opt] Delete fail message")] bool deleteMsg = false
         ) 
         {
+            if (!ulong.TryParse(punishmentTimeout, out var parsedPunishmentTimeout))
+            {
+                await Interaction.ReplyInvalidParameterErrorAsync("punishment timeout");
+                return;
+            }
+
             var thisChannel = channel ?? Context.Channel;
             if (string.IsNullOrWhiteSpace(regex))
             {
@@ -68,6 +75,7 @@ namespace SolarisBot.Discord.Modules.Fun
             dbChannel.AppliedRoleId = punishmentRole?.Id ?? ulong.MinValue;
             dbChannel.PunishmentMessage = punishmentMsg;
             dbChannel.PunishmentDelete = deleteMsg;
+            dbChannel.PunishmentTimeout = parsedPunishmentTimeout;
 
             _dbContext.RegexChannels.Update(dbChannel);
             _logger.LogDebug("{intTag} Setting regex to rx={channelRegex}, role={punishmentRole}, msg={punishmentMsg}, del={delete} for channel {channel} in guild {guild}", GetIntTag(), dbChannel.Regex, dbChannel.AppliedRoleId, dbChannel.PunishmentMessage, dbChannel.PunishmentDelete, thisChannel.Log(), Context.Guild.Log());
