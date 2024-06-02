@@ -1,7 +1,4 @@
-﻿# THIS PROJECT IS NOT COMPLETE IN THE CURRENT STATE
-Due to the lack of me using branches currently the feature "RegEx Channels" is not complete (missing service), after the full implementation development will no longer be done on the main branch
-
-# SolarisBot
+﻿# SolarisBot
 A simple bot I made for my own server because I felt like it
 
 ## Features
@@ -33,3 +30,5 @@ All of these features are disabled by default and can be turned on on a per-guil
   - Allow users to select roles from groups using a intuitive system, each group can be restricted to a role aswell
 - **User Analysis**
   - Automatically scan a users legitimacy on join and set up automatic actions and warnings
+- **RegEx Channels**
+  - Enforce a regex in any channel and punish violations
